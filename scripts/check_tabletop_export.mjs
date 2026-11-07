@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { validatePartial, fingerprint } from './tabletop-export.mjs';
+const collection = [{ id: 0, task: 'pour' }, { id: 1, task: 'push' }];
+const studies = collection.map(s => ({ ...s, file: `episode-000${s.id + 1}.json.gz`, metrics: {}, provenance: {}, frames: 361 }));
+const index = { planned: 2, recorded: 2, studies, plan_fingerprint: fingerprint(collection) };
+validatePartial(index, collection, collection);
+assert.throws(() => validatePartial(index, collection, [...collection].reverse()), /fingerprint mismatch/);
+assert.throws(() => validatePartial({ ...index, studies: [studies[0], studies[0]] }, collection, collection), /Duplicate/);
+assert.throws(() => validatePartial({ ...index, studies: [{ ...studies[0], task: 'stack' }, studies[1]] }, collection, collection), /differs/);
+console.log('Partial export rejects rotated plans, duplicate IDs/files and conflicting scenarios.');

@@ -1,0 +1,41 @@
+{
+  "name": "labbit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "npm run prepare:cloud",
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:e2e": "playwright test",
+    "prepare:cloud": "python -m scripts.prepare_cloud",
+    "build:cloud": "npm run prepare:cloud && npm run build && tsc -p tsconfig.cloudflare.json",
+    "dev:cloud": "wrangler dev --port 8787",
+    "deploy": "npm run build:cloud && wrangler deploy",
+    "test:wasm": "npm run prepare:cloud && node scripts/check_wasm.mjs",
+    "test:assets": "node scripts/check_asset_fetch.mjs",
+    "test:tabletop": "npm run prepare:cloud && node scripts/check_tabletop.mjs --all",
+    "test:cloud": "node scripts/check_cloud.mjs",
+    "test:first-launch": "node scripts/check_first_launch.mjs"
+  },
+  "dependencies": {
+    "@mujoco/mujoco": "^4.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.181.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261107.1",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.181.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.3",
+    "vite": "^6.1.0",
+    "wrangler": "^4.158.0"
+  }
+}

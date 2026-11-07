@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hand-studio",
+  "main": "cloudflare/worker.ts",
+  "account_id": "59140e7918459e2a3426535503b96feb",
+  "compatibility_date": "2026-11-07",
+  "workers_dev": true,
+  "assets": {"directory":"./dist", "binding":"ASSETS", "not_found_handling":"single-page-application", "run_worker_first":["/api/*", "/datasets/*"]},
+  "r2_buckets": [{"binding":"DATA", "bucket_name":"hand-studio-trajectories"}],
+  "durable_objects": {"bindings":[{"name":"COORDINATOR","class_name":"Coordinator"}]},
+  "migrations": [{"tag":"v1","new_sqlite_classes":["Coordinator"]}],
+  "vars": {"META_MODEL":"muse-wonder-1.0", "AI_BUDGET_USD":"100"},
+  "observability": {"enabled":true}
+}
