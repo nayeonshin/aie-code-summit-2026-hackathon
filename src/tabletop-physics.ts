@@ -1,9 +1,10 @@
 import type { MainModule, MjModel, MjData } from '@mujoco/mujoco';
 import { fetchAsset } from './asset-fetch';
 import { duration, sampleHz, type Scenario } from './tabletop-scenarios';
+import { calibrateGrasp, rotateY, graspController } from './grasp';
 
 export type TableGeom = { id: number; type: 'mesh' | 'box' | 'sphere' | 'cylinder'; size: number[]; color: string; mesh?: { vertices: number[]; faces: number[] } };
-export type TableFrame = { time: number; positions: number[][]; rotations: number[][]; contacts: number; object: number[] };
+export type TableFrame = { time: number; positions: number[][]; rotations: number[][]; contacts: number; object: number[]; objectCenter: number[]; palm: number[]; palmNormal: number[]; graspCenter: number[]; holding: boolean };
 export type TableEpisode = { scenario: Scenario; geoms: TableGeom[]; frames: TableFrame[]; metrics: { finite: boolean; contacts: number; goalDistance: number; retainedParticles?: number; totalParticles?: number }; provenance: { runtime: string; controller: string; fluid: string; timestep: number; hand: string; handActuators: number } };
 let robotFiles: Promise<{ xml: string; files: { name: string; bytes: Uint8Array }[] }> | undefined;
 async function robotAssets() {
@@ -13,7 +14,7 @@ async function robotAssets() {
     const files = [];
     for (let i = 0; i < names.length; i += 6) files.push(...await Promise.all(names.slice(i, i + 6).map(async name => ({ name, bytes: await fetchAsset('/model/' + name, 'Robot asset ' + name) }))));
     return { xml: new TextDecoder().decode(files.find(f => f.name === 'right_hand.xml')!.bytes), files };
-  })();
+  })().catch(error => { robotFiles = undefined; throw error; });
 }
 const top = .72, beads = 36;
 const smooth = (t: number) => { const a = Math.max(0, Math.min(1, t)); return a * a * (3 - 2 * a); };
@@ -59,6 +60,10 @@ export async function simulateTabletop(mj: MainModule, scenario: Scenario): Prom
     const id = (type: any, name: string) => mj.mj_name2id(m, type.value, name);
     const objectBody = id(mj.mjtObj.mjOBJ_BODY, 'object');
     const palm = m.body_mocapid[id(mj.mjtObj.mjOBJ_BODY, 'palm')], carrier = m.body_mocapid[id(mj.mjtObj.mjOBJ_BODY, 'carrier')], pusher = m.body_mocapid[id(mj.mjtObj.mjOBJ_BODY, 'pusher')];
+    const palmBody = id(mj.mjtObj.mjOBJ_BODY, 'palm');
+    const grip = calibrateGrasp(mj, m, palm, pouring ? .049 : s.size, pouring);
+    d.mocap_pos.set([s.start[0] - grip.center[0], s.start[1] + (pouring ? grip.center[2] : -grip.center[1]), objectZ + (pouring ? .046 - grip.center[1] : -grip.center[2]) + .1], palm * 3);
+    d.mocap_quat.set(pouring ? [Math.SQRT1_2, Math.SQRT1_2, 0, 0] : [1, 0, 0, 0], palm * 4);
     const geoms: TableGeom[] = [];
     for (let i = 0; i < m.ngeom; i++) {
       const name = mj.mj_id2name(m, mj.mjtObj.mjOBJ_GEOM.value, i);
@@ -77,9 +82,11 @@ export async function simulateTabletop(mj: MainModule, scenario: Scenario): Prom
     for (let frame = 0; frame <= duration * sampleHz; frame++) {
       const end = frame / sampleHz;
       while (d.time + 1e-8 < end) {
-        const t = d.time, travel = smooth((t - 3) / 3.5), release = t >= 8;
+        const t = d.time * (s.motion?.speed ?? 1), travel = smooth((t - 3) / 3.5);
         let x = mix(s.start[0], s.goal[0], travel), y = mix(s.start[1], s.goal[1], travel);
-        let z = objectZ + .15 * smooth((t - 2) / 1) - .15 * smooth((t - 6.5) / 1.5);
+        y += (s.motion?.lateral ?? 0) * Math.sin(Math.PI * travel);
+        const lift = s.motion?.lift ?? .15;
+        let z = objectZ + lift * smooth((t - 2) / 1) - lift * smooth((t - 6.5) / 1.5);
         if (s.task === 'stack') z += .064 * smooth((t - 3) / 2);
         let tilt = 0;
         if (pouring) {
@@ -87,6 +94,8 @@ export async function simulateTabletop(mj: MainModule, scenario: Scenario): Prom
           y = mix(s.start[1], s.goal[1], smooth((t - 2.5) / 2));
           z = objectZ + .18 * smooth((t - 2) / 1);
           tilt = 1.95 * smooth((t - 4.5) / 2) * (1 - smooth((t - 7.2) / 1));
+          // Pouring keeps the calibrated clearance/tilt; Muse varies speed,
+          // placement and friction without inventing unsafe fluid geometry.
           // Return the emptied source cup to its own spot before releasing.
           x = mix(x, s.start[0], smooth((t - 8.3) / 1.5));
           y = mix(y, s.start[1], smooth((t - 8.3) / 1.5));
@@ -96,21 +105,32 @@ export async function simulateTabletop(mj: MainModule, scenario: Scenario): Prom
         d.eq_active[0] = holding ? 1 : 0;
         d.mocap_pos.set([x, y, z], carrier * 3); d.mocap_quat.set([Math.cos(tilt / 2), 0, Math.sin(tilt / 2), 0], carrier * 4);
         const pushX = mix(s.start[0] - s.size - .015, s.goal[0] - s.size - .012, smooth((t - 2) / 5));
-        d.mocap_pos.set(s.task === 'push' && t >= 1.5 && t < 8 ? [pushX, s.start[1], top + .026] : [-.44, -.24, top + .15], pusher * 3);
-        // Visual articulated wrist follows the assisted tool, then retreats.
+        const pushY = mix(s.start[1], s.goal[1], smooth((t - 2) / 5));
+        d.mocap_pos.set(s.task === 'push' && t >= 1.5 && t < 8 ? [pushX, pushY, top + .026] : [-.44, -.24, top + .15], pusher * 3);
+        // LEAP fingers curl into local -Z. The old X-half-turn pointed that
+        // palmar side away from the object. Use the object orientation directly,
+        // and rotate the calibrated grip offset with it throughout the pour.
         const wristX = s.task === 'push' ? pushX : x;
-        d.mocap_pos.set([wristX - .045, (s.task === 'push' ? s.start[1] : y) - .115, (s.task === 'push' ? top + .105 : z + .07) + .12 * smooth((t - (pouring ? 10.6 : 8)) / 1)], palm * 3);
-        d.mocap_quat.set([0, Math.cos(tilt / 2), 0, -Math.sin(tilt / 2)], palm * 4);
-        for (let j = 0; j < m.nu; j++) d.ctrl[j] = holding ? (j % 4 === 1 ? .1 : .6) : .08;
+        const offset = rotateY(pouring ? [-grip.center[0], grip.center[2], .046 - grip.center[1]] : [-grip.center[0], -grip.center[1], -grip.center[2]], tilt);
+        const approach = .10 * (1 - smooth(t / 1.5));
+        const retreat = .12 * smooth((t - (pouring ? 10.6 : 8)) / 1);
+        d.mocap_pos.set([wristX + offset[0], (s.task === 'push' ? pushY : y) + offset[1], (s.task === 'push' ? top + .05 : z) + offset[2] + approach + retreat], palm * 3);
+        d.mocap_quat.set(pouring ? [Math.SQRT1_2 * Math.cos(tilt / 2), Math.SQRT1_2 * Math.cos(tilt / 2), Math.SQRT1_2 * Math.sin(tilt / 2), -Math.SQRT1_2 * Math.sin(tilt / 2)] : [Math.cos(tilt / 2), 0, Math.sin(tilt / 2), 0], palm * 4);
+        const close = smooth((t - .8) / .7) * (1 - smooth((t - (pouring ? 10.6 : 8)) / .5));
+        for (let j = 0; j < m.nu; j++) d.ctrl[j] = mix(.08, grip.controls[j], close);
         mj.mj_step(m, d); contacts = Math.max(contacts, d.ncon);
       }
       mj.mj_forward(m, d);
-      frames.push({ time: end, positions: geoms.map(g => Array.from(d.geom_xpos.slice(g.id * 3, g.id * 3 + 3))), rotations: geoms.map(g => Array.from(d.geom_xmat.slice(g.id * 9, g.id * 9 + 9))), contacts: d.ncon, object: Array.from(d.xpos.slice(objectBody * 3, objectBody * 3 + 3)) });
+      const rotation = d.xmat.slice(palmBody * 9, palmBody * 9 + 9), palmPosition = Array.from(d.xpos.slice(palmBody * 3, palmBody * 3 + 3)) as number[];
+      const graspCenter = palmPosition.map((p, axis) => p + rotation[axis * 3] * grip.center[0] + rotation[axis * 3 + 1] * grip.center[1] + rotation[axis * 3 + 2] * grip.center[2]);
+      const objectPosition = Array.from(d.xpos.slice(objectBody * 3, objectBody * 3 + 3)) as number[];
+      const objectCenter = objectPosition.map((p, axis) => p + (pouring ? .046 * d.xmat[objectBody * 9 + axis * 3 + 2] : 0));
+      frames.push({ time: end, positions: geoms.map(g => Array.from(d.geom_xpos.slice(g.id * 3, g.id * 3 + 3))), rotations: geoms.map(g => Array.from(d.geom_xmat.slice(g.id * 9, g.id * 9 + 9))), contacts: d.ncon, object: objectPosition, objectCenter, palm: palmPosition, palmNormal: [-rotation[2], -rotation[5], -rotation[8]], graspCenter, holding: !!d.eq_active[0] });
     }
     const last = frames[frames.length - 1], finite = frames.every(f => f.positions.flat().every(Number.isFinite));
     let retainedParticles = 0;
     if (pouring) for (let i = 0; i < beads; i++) { const b = id(mj.mjtObj.mjOBJ_BODY, 'drop_' + i), p = d.xpos.slice(b * 3, b * 3 + 3); if (Math.hypot(p[0] - s.goal[0], p[1] - s.goal[1]) < .044 && p[2] > top && p[2] < top + .1) retainedParticles++; }
     const target = pouring ? [...s.start, objectZ] : [...s.goal, goalZ];
-    return { scenario: s, geoms, frames, metrics: { finite, contacts, goalDistance: Math.hypot(...last.object.map((n, i) => n - target[i])), ...(pouring ? { retainedParticles, totalParticles: beads } : {}) }, provenance: { runtime: 'MuJoCo 4 / browser WASM', controller: 'scripted-mocap-wrist + temporary-weld-assist; push uses rigid pusher contacts', fluid: pouring ? '36 discrete rigid particles; not continuum water' : 'none', timestep: .004, hand: 'custom five-finger / 20-actuator extension of the licensed four-finger LEAP model; not a calibrated hardware model', handActuators: m.nu } };
+    return { scenario: s, geoms, frames, metrics: { finite, contacts, goalDistance: Math.hypot(...last.object.map((n, i) => n - target[i])), ...(pouring ? { retainedParticles, totalParticles: beads } : {}) }, provenance: { runtime: 'MuJoCo 4 / browser WASM', controller: graspController + '; temporary weld assist; push uses rigid pusher contacts', fluid: pouring ? '36 discrete rigid particles; not continuum water' : 'none', timestep: .004, hand: 'custom five-finger / 20-actuator extension of the licensed four-finger LEAP model; not a calibrated hardware model', handActuators: m.nu } };
   } finally { data?.delete(); model?.delete(); vfs.delete(); }
 }

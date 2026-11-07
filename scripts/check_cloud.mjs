@@ -3,8 +3,16 @@ import assert from 'node:assert/strict';
 import { gzipSync } from 'node:zlib';
 import { build } from 'esbuild';
 async function bundled(path) { const result = await build({ entryPoints: [path], bundle: true, platform: 'node', format: 'esm', write: false }); return import('data:text/javascript;base64,' + Buffer.from(result.outputFiles[0].text).toString('base64')); }
-const { Coordinator } = await bundled('cloudflare/worker.ts');
+const { Coordinator, default: worker } = await bundled('cloudflare/worker.ts');
 const { schedule } = await bundled('src/objectives.ts');
+const { createCollection, validateTableVariants } = await bundled('src/tabletop-scenarios.ts');
+const proposal = { id: 'fixture-muse-plan', model: 'muse-wonder-1.0', created_at: '2026-11-07T00:00:00Z', count: 1000, variants: Array.from({ length: 24 }, (_, i) => ({ task: ['transfer', 'push', 'stack', 'pour'][i % 4], shape: ['cube', 'sphere', 'cylinder'][i % 3], size: .02 + i % 4 * .004, mass: .04 + i % 5 * .02, friction: .4 + i % 4 * .2, speed: .95 + i % 3 * .04, lift: .13 + i % 4 * .02, lateral: (i % 3 - 1) * .02, startY: -.06, goalY: .06, rationale: 'Bounded fixture diversity, not an AI call' })) };
+const expanded = createCollection(proposal);
+assert.equal(expanded.length, 1000); assert.equal(new Set(expanded.map(s => s.seed)).size, 1000);
+assert.equal(expanded[100].proposal.planId, proposal.id); assert.equal(expanded[100].motion.speed, proposal.variants[100 % 24].speed);
+for (const key of ['size', 'mass', 'friction']) assert.ok(new Set(expanded.map(s => s[key])).size > 10);
+assert.throws(() => validateTableVariants(proposal.variants.map((v, i) => i ? v : { ...v, speed: 50 })), /out-of-bounds/);
+console.log('Muse inputs: bounded physical variants, 1,000 deterministic seeds, applied motion controls and rejected unsafe proposals passed.');
 const NativeRequest = globalThis.Request;
 globalThis.Request = class extends NativeRequest { constructor(url, options = {}) { super(url, { ...options, ...(options.body instanceof ReadableStream ? { duplex: 'half' } : {}) }); } };
 const store = new Map();
@@ -26,6 +34,16 @@ await request(`/api/runs/${run.id}/resume`, 'POST');
 const mutations = [r => { r.time = 'x'.repeat(600); }, r => { r.time[1] = r.time[0]; }, r => { r.time[1] = null; }, r => { r.contacts = []; }, r => { r.contacts[0] = -1; }, r => { r.contacts[0] = .5; }, r => { r.valid = 'true'; }, r => { r.valid = false; r.objective_pass = true; }, r => { r.objective_pass = 1; }];
 for (const mutate of mutations) { const next = row(1); mutate(next); assert.equal((await upload([next])).status, 400); assert.equal(JSON.parse(store.get(`runs/${run.id}/manifest.json`)).attempted, 1); }
 assert.equal((await upload([row(1)])).status, 200);
+const clock = Date.now;
+try {
+  const updated = JSON.parse(store.get(`runs/${run.id}/manifest.json`));
+  const checkpointTime = Date.parse(updated.updated_at);
+  Date.now = () => checkpointTime + 119999;
+  const before = await (await worker.fetch(new Request(`https://lab.test/api/runs/${run.id}`), env)).json(); assert.equal(before.status, 'running');
+  Date.now = () => checkpointTime + 120001;
+  const after = await (await worker.fetch(new Request(`https://lab.test/api/runs/${run.id}`), env)).json(); assert.equal(after.status, 'interrupted');
+  const list = await (await worker.fetch(new Request('https://lab.test/api/runs'), env)).json(); assert.equal(list[0].status, after.status);
+} finally { Date.now = clock; }
 console.log('Coordinator: two-client cancellation, idempotency, explicit resume, and invalid-shard rejection passed.');
 
 await build({ entryPoints: ['src/cloud-runtime.ts'], bundle: true, platform: 'node', format: 'esm', outfile: 'test-results/cloud-runtime-test.mjs' });

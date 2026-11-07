@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 test('tabletop collection, navigation, real playback, and export', async ({ page }) => {
   test.setTimeout(120000);
   const errors: string[] = [];
+  await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
+  await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Tabletop studies 100' })).toBeVisible();
@@ -38,6 +40,8 @@ test('tabletop collection, navigation, real playback, and export', async ({ page
 test('mobile simulation browser fits and closes after selection', async ({ page }) => {
   test.setTimeout(120000);
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
+  await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
   await page.goto('/');
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
   await page.getByRole('button', { name: 'Browse studies' }).click();

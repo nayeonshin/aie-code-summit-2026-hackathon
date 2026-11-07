@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "npm run prepare:cloud",
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
@@ -15,7 +16,8 @@
     "test:wasm": "npm run prepare:cloud && node scripts/check_wasm.mjs",
     "test:assets": "node scripts/check_asset_fetch.mjs",
     "test:tabletop": "npm run prepare:cloud && node scripts/check_tabletop.mjs --all",
-    "test:cloud": "node scripts/check_cloud.mjs"
+    "test:cloud": "node scripts/check_cloud.mjs",
+    "test:first-launch": "node scripts/check_first_launch.mjs"
   },
   "dependencies": {
     "@mujoco/mujoco": "^4.0.0",

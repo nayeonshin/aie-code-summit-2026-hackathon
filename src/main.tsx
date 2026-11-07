@@ -5,6 +5,7 @@ import { HandRenderer, type Description, type State } from './renderer';
 import { type CloudRuntime, setAdminToken, getAdminToken } from './cloud-runtime';
 import './style.css';
 import { Tabletop } from './tabletop';
+import { DataExplorer } from './data-explorer';
 
 type Run = { id: string; status: string; attempted: number; valid: number; config: { count: number }; episodes_per_second?: number };
 type Decision = { model: string; image_count: number; answers: { movement: { choice: string; confidence: number }; coordination: { score: number } } };
@@ -22,6 +23,7 @@ async function api<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 function App({ onTabletop }: { onTabletop: () => void }) {
+  const [dataOpen, setDataOpen] = useState(false);
   const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<HandRenderer | null>(null);
   const cells = useRef<(HTMLElement | null)[]>([]);
@@ -173,6 +175,13 @@ function App({ onTabletop }: { onTabletop: () => void }) {
     catch (err) { setError((err as Error).message); }
     finally { setStarting(false); }
   };
+  const resumeRun = async (run: Run) => {
+    try {
+      const result = await api<Run>(`/api/runs/${run.id}/resume`, { method: 'POST' });
+      if (cloud) setRuns(list => list.map(r => r.id === run.id ? { ...r, ...result } : r));
+      else { setRuns(list => list.map(r => r.id === run.id ? { ...r, status: 'starting' } : r)); setRuns(await api<Run[]>('/api/runs')); }
+    } catch (error) { setError((error as Error).message); }
+  };
 
   const loadReplay = async (run: Run, episode = 0) => {
     try {
@@ -194,6 +203,7 @@ function App({ onTabletop }: { onTabletop: () => void }) {
     <header>
       <div className="wordmark"><img className="labbit-mark" src="/labbit.svg" alt=""/><span>labbit<span className="wordmark-light"> / lab</span></span></div>
       <button className="foundations-switch" onClick={onTabletop}>Tabletop studies ↗</button>
+      <button className="tt-data-button" onClick={() => setDataOpen(true)}>Data & AI</button>
       <div className="header-right">{cloudMode && <button aria-label="Unlock cloud generation" title="Cloud admin access" onClick={() => setUnlock(!unlock)}><KeyRound size={13}/></button>}<span className={`status ${connected ? 'online' : ''}`}><i />{replay ? 'REPLAY' : connected ? 'LIVE' : 'OFFLINE'}</span><span className="engine-label">MuJoCo</span></div>
     </header>
 
@@ -226,7 +236,7 @@ function App({ onTabletop }: { onTabletop: () => void }) {
         <div className="run-bottom"><span>{run.valid.toLocaleString()} valid</span><div>
           {run.attempted > 0 && <><button title="Replay a recorded episode" aria-label="Replay episode" onClick={() => void loadReplay(run)}><Play size={13}/></button><a href={`/datasets/${run.id}/manifest.json`} download title="Download dataset manifest" aria-label="Download manifest"><Download size={13}/></a></>}
           {['running', 'starting'].includes(run.status) && <button title="Stop after this shard" aria-label="Cancel generation" onClick={() => void api(`/api/runs/${run.id}/cancel`, { method: 'POST' }).catch(err => setError(err.message))}><Square size={12}/></button>}
-          {['cancelled', 'interrupted', 'failed'].includes(run.status) && <button disabled={!!activeRun} title="Resume generation" aria-label="Resume generation" onClick={() => void api(`/api/runs/${run.id}/resume`, { method: 'POST' }).catch(err => setError(err.message))}><RotateCcw size={13}/></button>}
+          {['cancelled', 'interrupted', 'failed'].includes(run.status) && <button disabled={!!activeRun} title="Resume generation" aria-label="Resume generation" onClick={() => void resumeRun(run)}><RotateCcw size={13}/></button>}
         </div></div>
       </div>)}</div>
     </aside>}
@@ -245,6 +255,7 @@ function App({ onTabletop }: { onTabletop: () => void }) {
       </div>
       <div className="footer-right">{replay ? <input aria-label="Replay position" type="range" min="0" max={replay.frames.length - 1} value={frame} onChange={e => { frameRef.current = Number(e.target.value); setFrame(frameRef.current); }}/>: <span>LEAP <span className="muted">/ 16 DOF</span></span>}</div>
     </footer>
+    {dataOpen && <DataExplorer onClose={() => setDataOpen(false)}/>}
   </main>;
 }
 

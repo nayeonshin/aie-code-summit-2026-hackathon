@@ -15,9 +15,42 @@
 
 **Live deployment:** https://hand-studio.hidden-pond-5e6a.workers.dev
 
+**Hugging Face dataset:** https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation
+
+### First-release review gate
+
+PR #2 is stacked on PR #1. Resolve/re-review the recovery and startup findings, merge #2 into the first app branch, then merge #1 into `main`. **Do not start a credit-exhausting generation job during review.** AI calls are explicit authenticated actions, never triggered by browsing the app. The coordinator's reservation is a conservative local cap, not the actual Meta/SubQ billing balance.
+
+### Data & AI explorer
+
+Open **Data & AI** in either workspace to distinguish **MuJoCo trajectories**, **Muse parameter proposals/rationale**, and **SubQ visual reviews**. The panel includes a Hugging Face button, collection files, model/plan attribution and raw saved review outputs. Unreviewed tabletop episodes are labeled **SubQ not reviewed**; existing hand-only reviews are not fabricated into tabletop labels.
+
+The current expanded collection contains **1,000 planned Muse-derived scenarios** from a real accepted 24-anchor Muse Wonder plan. **100 of those tabletop trajectories** are exported alongside **390 archived hand-only episodes**. Planned, recorded and reviewed counts are separate. Raw trajectories live on Hugging Face; small public inventory/plan snapshots are versioned in `config/` and copied into the frontend at startup/build.
+
+The corrected tabletop grip uses MuJoCo fingertip kinematics, a palm-facing wrist frame and an object-local offset. Cups use a side grip that rotates with the cup. Grasps are still assisted by a compliant weld—not an autonomous contact-grasp policy. Pour geometry and fluid clearance remain calibrated; shape/size/mass proposals describe solid objects, while pouring varies placement, speed and surface friction.
+
+The previous 100 seeded baseline scenarios remain the fallback when no Muse plan is available. The larger collection varies supported tasks, shapes, sizes, masses, friction, source/target placement, transport curvature, lift and speed within validated bounds.
+
+### Reproduce exports and publish with the CLI
+
+```sh
+# Explicit paid call; wait until the first app release is reviewed/merged.
+node scripts/generate_muse.mjs
+
+# Local physics only: validate and export 100 scenarios from the saved plan.
+node scripts/check_tabletop.mjs --plan=data/publish/muse/tabletop-plan.json --export
+python -m scripts.prepare_data
+
+# Authenticate locally. Never paste tokens into source or dataset files.
+hf auth login
+hf upload MedSalim/labbit-robotic-manipulation data/publish . --repo-type dataset
+```
+
+See [`docs/dataset-card.md`](docs/dataset-card.md) for formats, provenance, privacy and modeling limitations. `catalog.json` on Hugging Face is the published inventory; a new plan does not silently add completed recordings or SubQ labels.
+
 ### Tabletop workspace (new default)
 
-The default workspace contains **100 deterministic, on-demand tabletop studies**: 25 pick/place, 25 surface pushes, 25 stack/balance tasks, and 25 cup-to-cup particle pours. Each selected study computes a 12-second MuJoCo trajectory (361 frames including the initial state), then plays it locally. This is a scenario collection, **not 100 pre-uploaded R2 manipulation recordings**. Six recent episodes are cached to bound browser memory.
+The baseline contains **100 deterministic tabletop studies**: 25 pick/place, 25 surface pushes, 25 stack/balance tasks, and 25 cup-to-cup particle pours. The default now loads the published **1,000-scenario Muse plan**, with the baseline as a fallback. Each selected study computes a 12-second MuJoCo trajectory (361 frames including the initial state), then plays it locally. The scenario count is **not a count of pre-uploaded R2 manipulation recordings**. Six recent episodes are cached to bound browser memory.
 
 - Browse or search the sidebar; filter by task. On mobile, use **Browse studies**.
 - Use **← / →** for previous/next, **Space** to pause, the timeline to scrub, and the speed selector for slow motion. Drag to orbit and scroll/pinch to zoom.
@@ -27,7 +60,7 @@ The default workspace contains **100 deterministic, on-demand tabletop studies**
 - “Water” is **36 discrete rigid particles** interacting with compound cup walls, not a continuum fluid solver. The UI reports particles retained in the receiving cup; it does not claim calibrated fluid volume or real-world pouring success.
 - The rabbit icon is an SVG recreation of the supplied brand reference. Text uses a larger system font without external font downloads.
 
-Run `npm run test:tabletop` to validate all 100 scenarios; `npm run test:cloud` checks cancellation, immutable-shard validation, crash recovery and remote cancellation without cloud writes or AI calls.
+Run `npm run test:tabletop` to validate the 100 baseline scenarios; `npm run test:cloud` checks cancellation, immutable-shard validation, crash recovery, stale-status consistency and remote cancellation without cloud writes or AI calls. `npm run test:first-launch` checks a real Chrome startup without a previous cloud build, and `node scripts/check_tabletop_retry.mjs` checks successful recovery after an exhausted asset download.
 
 ### Active Python environment (POSIX and Windows)
 
@@ -243,19 +276,20 @@ Python 3.12+ and Node 20+:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/python scripts/fetch_model.py
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python scripts/fetch_model.py
 npm install
 ```
 
-Copy `.env.example` to `.env`; set `SUBQ_API_KEY` and optional `MODEL_API_KEY`. Never commit keys. Run in separate terminals:
+Copy `.env.example` to `.env`; set `SUBQ_API_KEY` and optional `MODEL_API_KEY`. Never commit keys. Activate the environment in each terminal (Windows activation is documented above), then run in separate terminals:
 
 ```sh
-.venv/bin/uvicorn backend.app:app --host 127.0.0.1 --port 8000
+python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. The native Python backend is **local-only and unauthenticated**: do not expose it publicly.
+`npm run dev` runs the public model preparation step automatically, so no prior cloud build is needed. Open http://127.0.0.1:5173. The native Python backend is **local-only and unauthenticated**: do not expose it publicly.
 
 Generate a pilot, then scale explicitly:
 
