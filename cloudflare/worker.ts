@@ -108,13 +108,17 @@ export class Coordinator {
       const digest = await sha(compressed);
       const existing = m.shards.find(s => s.first === first);
       if (existing) return existing.sha256 === digest ? json(summary(m)) : bad('Conflicting shard already committed.', 409);
-      if (first !== m.attempted || m.status === 'complete') return bad('Shard does not match the next checkpoint.', 409);
+      if (m.status !== 'running') return bad(`Run is ${m.status}; explicitly resume before submitting new shards.`, 409);
+      if (first !== m.attempted) return bad('Shard does not match the next checkpoint.', 409);
       const decoded = await boundedBody(new Request('https://decode.local', { method: 'POST', body: new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip')) }), 16 * 1024 * 1024);
       const rows = JSON.parse(new TextDecoder().decode(decoded));
       if (!Array.isArray(rows) || rows.length < 1 || rows.length > 10 || first + rows.length > m.config.count) return bad('Invalid shard length.');
       const objectives = schedule(m.config.count, m.config.seed);
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
+        if (!Array.isArray(row.time) || row.time.length !== 600 || row.time.some((t: unknown, index: number) => typeof t !== 'number' || !Number.isFinite(t) || t < 0 || (index > 0 && t <= row.time[index - 1])) ||
+            !Array.isArray(row.contacts) || row.contacts.length !== 600 || row.contacts.some((n: unknown) => !Number.isSafeInteger(n) || (n as number) < 0) ||
+            typeof row.valid !== 'boolean' || typeof row.objective_pass !== 'boolean' || (row.objective_pass && !row.valid)) return bad('Invalid timestamps, contacts, or validity flags.');
         if (row.episode_id !== first + i || row.recipe !== objectives[first + i] || row.seconds !== 20 || row.time?.length !== 600 || ['qpos', 'qvel', 'ctrl', 'actuator_force', 'external_force'].some(key => row[key]?.length !== 600 || row[key].some((a: unknown[]) => !Array.isArray(a) || a.length !== 16 || a.some(n => typeof n !== 'number' || !Number.isFinite(n))))) return bad('Invalid episode schema or objective schedule.');
       }
       const file = `shard-${String(first).padStart(6, '0')}.json.gz`;
@@ -129,6 +133,8 @@ export class Coordinator {
     if (control && request.method === 'POST') {
       const m = await readManifest(env, control[1]); if (!m) return bad('Run not found.', 404);
       if (m.status === 'complete') return bad('Run is already complete.', 409);
+      // Cleanup from a failed/stale client must not overwrite another tab's cancellation.
+      if (control[2] === 'pause' && m.status !== 'running') return json(summary(m));
       m.status = control[2] === 'resume' ? 'running' : control[2] === 'cancel' ? 'cancelled' : 'interrupted';
       return writeManifest(env, m);
     }

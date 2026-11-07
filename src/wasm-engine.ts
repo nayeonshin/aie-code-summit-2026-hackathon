@@ -2,6 +2,7 @@ import loadMujoco, { type MainModule, type MjModel, type MjData } from '@mujoco/
 import wasmUrl from '@mujoco/mujoco/mujoco.wasm?url';
 import { recipes, plan, randomGenerator, type Variant } from './objectives';
 import type { Description, State } from './renderer';
+import { fetchAsset } from './asset-fetch';
 
 export type Episode = { episode_id: number; seed: number; recipe: string; seconds: number; parameters: object; time: number[]; qpos: number[][]; qvel: number[][]; ctrl: number[][]; actuator_force: number[][]; external_force: number[][]; contacts: number[]; valid: boolean; objective_pass: boolean; warnings: number; tracking_rmse: number; settled_tracking_rmse: number; joint_limit_error: number; peak_velocity: number; mean_abs_acceleration: number };
 const matrix = (array: ArrayLike<number>, width: number) => Array.from({ length: array.length / width }, (_, i) => Array.from({ length: width }, (_, j) => array[i * width + j]));
@@ -9,18 +10,20 @@ const matrix = (array: ArrayLike<number>, width: number) => Array.from({ length:
 export class WasmEngine {
   constructor(public mj: MainModule, public model: MjModel, public provenance: Record<string, unknown>) {}
   static async create() {
-    const binaryResponse = await fetch(wasmUrl + '.gz', { signal: AbortSignal.timeout(90000) });
-    if (!binaryResponse.ok || !binaryResponse.body) throw new Error('Physics module failed to download.');
-    const wasmBinary = new Uint8Array(await new Response(binaryResponse.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+    // Vite emits the compressed sidecar only during a production build.
+    const development = import.meta.env.DEV;
+    const binary = await fetchAsset(wasmUrl + (development ? '' : '.gz'), 'Physics module');
+    const wasmBinary = development ? binary : new Uint8Array(await new Response(new Blob([binary]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
     const mj = await loadMujoco({ wasmBinary, locateFile: (path: string) => path.endsWith('.wasm') ? wasmUrl : path });
-    const manifest = await (await fetch('/model/manifest.json')).json();
+    const manifest = JSON.parse(new TextDecoder().decode(await fetchAsset('/model/manifest.json', 'Robot manifest')));
     const vfs = new mj.MjVFS();
     try {
-      await Promise.all(manifest.files.filter((file: string) => file.endsWith('.xml') || file.endsWith('.obj')).map(async (file: string) => {
-        const response = await fetch('/model/' + file);
-        if (!response.ok) throw new Error('Robot asset failed to load: ' + file);
-        vfs.addBuffer(file, new Uint8Array(await response.arrayBuffer()));
-      }));
+      const files: string[] = manifest.files.filter((file: string) => file.endsWith('.xml') || file.endsWith('.obj'));
+      // Avoid flooding mobile browsers with simultaneous mesh downloads.
+      for (let start = 0; start < files.length; start += 6) {
+        const buffers = await Promise.all(files.slice(start, start + 6).map(async file => ({ file, buffer: await fetchAsset('/model/' + file, 'Robot asset ' + file) })));
+        for (const { file, buffer } of buffers) vfs.addBuffer(file, buffer);
+      }
       const model = mj.MjModel.from_xml_path('right_hand.xml', vfs);
       model.opt.timestep = .002;
       return new WasmEngine(mj, model, { ...manifest.provenance, mujoco_version: mj.mj_versionString(), runtime: 'browser-wasm', rng: 'mulberry32-v1', recipe_version: plan.version, controller_version: 'browser-controller-2.1', sample_hz: 30, physics_dt: .002 });
@@ -43,6 +46,9 @@ export class WasmEngine {
     const data = new this.mj.MjData(this.model);
     try { data.qpos.set(qpos); this.mj.mj_forward(this.model, data); return this.state(data); }
     finally { data.delete(); }
+  }
+  replayRecorded(row: Episode, index: number) {
+    return { ...this.replay(row.qpos[index]), time: row.time[index], qvel: row.qvel[index], ctrl: row.ctrl[index], contacts: row.contacts[index], actuator_force: row.actuator_force[index], external_force: row.external_force[index] };
   }
   state(data: MjData): State {
     return { time: data.time, positions: matrix(data.geom_xpos, 3), rotations: matrix(data.geom_xmat, 9), qpos: Array.from(data.qpos), qvel: Array.from(data.qvel), ctrl: Array.from(data.ctrl), contacts: data.ncon };

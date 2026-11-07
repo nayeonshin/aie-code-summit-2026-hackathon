@@ -4,7 +4,7 @@ test('live grid, pause, focus, dataset controls, and VLM upload', async ({ page 
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.route('**/api/health', route => route.fulfill({ json: { subq_configured: true } }));
-  await page.goto('/');
+  await page.goto('/#hands');
   await expect(page).toHaveTitle('Labbit · robotic hand lab');
   await expect(page.locator('.wordmark')).toHaveText('labbit / lab');
   await expect(page.locator('.status')).toHaveText('LIVE');
@@ -43,7 +43,7 @@ test('live grid, pause, focus, dataset controls, and VLM upload', async ({ page 
 
 test('mobile grid stays usable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
+  await page.goto('/#hands');
   await expect(page.locator('.status')).toHaveText('LIVE');
   await page.getByRole('button', { name: 'Show four simulations' }).click();
   await page.waitForTimeout(500);

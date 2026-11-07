@@ -30,7 +30,7 @@ self.onmessage = async event => {
       }
       self.postMessage({ type: 'result', id, rows });
     } else if (type === 'replay') {
-      self.postMessage({ type: 'result', id, frames: data.row.qpos.map((qpos: number[], index: number) => ({ ...engine.replay(qpos), time: data.row.time[index] })) });
+      self.postMessage({ type: 'result', id, frames: data.row.qpos.map((_: number[], index: number) => engine.replayRecorded(data.row, index)) });
     }
   } catch (err) { self.postMessage({ type: 'error', id, error: (err as Error).message }); }
 };

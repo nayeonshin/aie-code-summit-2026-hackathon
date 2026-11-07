@@ -4,6 +4,7 @@ import { Pause, Play, Shuffle, Grid2X2, Grid3X3, Maximize2, Minimize2, Sparkles,
 import { HandRenderer, type Description, type State } from './renderer';
 import { type CloudRuntime, setAdminToken, getAdminToken } from './cloud-runtime';
 import './style.css';
+import { Tabletop } from './tabletop';
 
 type Run = { id: string; status: string; attempted: number; valid: number; config: { count: number }; episodes_per_second?: number };
 type Decision = { model: string; image_count: number; answers: { movement: { choice: string; confidence: number }; coordination: { score: number } } };
@@ -20,7 +21,7 @@ async function api<T>(url: string, options?: RequestInit): Promise<T> {
   return response.json();
 }
 
-function App() {
+function App({ onTabletop }: { onTabletop: () => void }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<HandRenderer | null>(null);
   const cells = useRef<(HTMLElement | null)[]>([]);
@@ -115,10 +116,25 @@ function App() {
   }, [count, focus, description, replay]);
 
   useEffect(() => {
-    const refresh = () => api<Run[]>('/api/runs').then(setRuns).catch(() => {});
-    void refresh(); const interval = setInterval(refresh, 1500);
-    return () => clearInterval(interval);
-  }, []);
+    if (!recordPanel) return;
+    let disposed = false;
+    void api<Run[]>('/api/runs').then(list => { if (!disposed) setRuns(list); }).catch(() => {});
+    return () => { disposed = true; };
+  }, [recordPanel]);
+  const progressRunId = runs.find(r => ['running', 'starting'].includes(r.status))?.id;
+  useEffect(() => {
+    if (!recordPanel || !progressRunId) return;
+    let disposed = false;
+    const refresh = async () => {
+      if (document.hidden) return;
+      try {
+        if (cloud) { const updated = await api<Run>(`/api/runs/${progressRunId}`); if (!disposed) setRuns(list => list.map(r => r.id === updated.id ? updated : r)); }
+        else { const list = await api<Run[]>('/api/runs'); if (!disposed) setRuns(list); }
+      } catch {}
+    };
+    const interval = setInterval(refresh, 1500);
+    return () => { disposed = true; clearInterval(interval); };
+  }, [recordPanel, progressRunId]);
 
   useEffect(() => {
     if (!replay) return;
@@ -177,6 +193,7 @@ function App() {
     <canvas ref={canvas} className="world" aria-label="Live MuJoCo robotic hand simulations" />
     <header>
       <div className="wordmark"><img className="labbit-mark" src="/labbit.svg" alt=""/><span>labbit<span className="wordmark-light"> / lab</span></span></div>
+      <button className="foundations-switch" onClick={onTabletop}>Tabletop studies ↗</button>
       <div className="header-right">{cloudMode && <button aria-label="Unlock cloud generation" title="Cloud admin access" onClick={() => setUnlock(!unlock)}><KeyRound size={13}/></button>}<span className={`status ${connected ? 'online' : ''}`}><i />{replay ? 'REPLAY' : connected ? 'LIVE' : 'OFFLINE'}</span><span className="engine-label">MuJoCo</span></div>
     </header>
 
@@ -231,4 +248,10 @@ function App() {
   </main>;
 }
 
-createRoot(document.getElementById('root')!).render(<App/>);
+function Workspace() {
+  const [mode, setMode] = useState(location.hash === '#hands' ? 'hands' : 'tabletop');
+  const switchMode = (next: string) => { location.hash = next === 'hands' ? 'hands' : 'tabletop'; setMode(next); };
+  useEffect(() => { const sync = () => setMode(location.hash === '#hands' ? 'hands' : 'tabletop'); window.addEventListener('hashchange', sync); return () => window.removeEventListener('hashchange', sync); }, []);
+  return mode === 'tabletop' ? <Tabletop onFoundations={() => switchMode('hands')}/> : <App onTabletop={() => switchMode('tabletop')}/>;
+}
+createRoot(document.getElementById('root')!).render(<Workspace/>);

@@ -180,8 +180,10 @@ def replay(ident: str, episode_id: int):
     data = Simulation(model, row['recipe'], row['seed']).data
     frames = []
     import mujoco
-    for timestamp, qpos in zip(row['time'], row['qpos']):
+    for index, (timestamp, qpos) in enumerate(zip(row['time'], row['qpos'])):
         data.qpos[:] = qpos
         mujoco.mj_forward(model, data)
-        frames.append({'time': timestamp, 'positions': data.geom_xpos.tolist(), 'rotations': data.geom_xmat.tolist(), 'qpos': qpos, 'qvel': [], 'ctrl': [], 'contacts': 0})
+        frames.append({'time': timestamp, 'positions': data.geom_xpos.tolist(), 'rotations': data.geom_xmat.tolist(), 'qpos': qpos,
+                       'qvel': row['qvel'][index], 'ctrl': row['ctrl'][index], 'contacts': row['contacts'][index],
+                       'actuator_force': row['actuator_force'][index], 'external_force': row['external_force'][index]})
     return {'recipe': row['recipe'], 'frames': frames, 'valid': row['valid']}

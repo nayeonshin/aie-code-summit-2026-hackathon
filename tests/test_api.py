@@ -70,4 +70,9 @@ def test_saved_episode_replay(monkeypatch, tmp_path):
         assert len(data['frames']) == 6
         assert len(data['frames'][0]['qpos']) == 16
         assert len(data['frames'][0]['positions']) > 16
+        import pyarrow.parquet as pq
+        row = pq.read_table(tmp_path / 'fixture/shard-000000.parquet').to_pylist()[0]
+        for index, frame in enumerate(data['frames']):
+            for field in ('qpos', 'qvel', 'ctrl', 'contacts', 'actuator_force', 'external_force'):
+                assert frame[field] == row[field][index]
         assert client.get('/api/runs/fixture/episodes/2').status_code == 404

@@ -15,6 +15,40 @@
 
 **Live deployment:** https://hand-studio.hidden-pond-5e6a.workers.dev
 
+### Tabletop workspace (new default)
+
+The default workspace contains **100 deterministic, on-demand tabletop studies**: 25 pick/place, 25 surface pushes, 25 stack/balance tasks, and 25 cup-to-cup particle pours. Each selected study computes a 12-second MuJoCo trajectory (361 frames including the initial state), then plays it locally. This is a scenario collection, **not 100 pre-uploaded R2 manipulation recordings**. Six recent episodes are cached to bound browser memory.
+
+- Browse or search the sidebar; filter by task. On mobile, use **Browse studies**.
+- Use **← / →** for previous/next, **Space** to pause, the timeline to scrub, and the speed selector for slow motion. Drag to orbit and scroll/pinch to zoom.
+- Export a selected episode as JSON with transforms, contact counts, task parameters, measured target error / retained particles, and explicit provenance.
+- The tabletop hand is a **custom five-finger, 20-actuator extension** of the licensed LEAP geometry, with a duplicated articulated little finger. It is not a calibrated five-finger hardware model. The original four-finger / 16-DOF dataset remains unchanged under **Hand studies** (`/#hands`).
+- Pick/place, stacking, and cup handling use a scripted mocap wrist and temporary weld-assisted grasp. Objects have mass, gravity, friction and physical contacts, and become unconstrained on release. Surface pushing uses a collision-driven pusher. These are **assisted manipulation demonstrations, not autonomous learned grasp policies**; visual hand collisions are disabled in this version.
+- “Water” is **36 discrete rigid particles** interacting with compound cup walls, not a continuum fluid solver. The UI reports particles retained in the receiving cup; it does not claim calibrated fluid volume or real-world pouring success.
+- The rabbit icon is an SVG recreation of the supplied brand reference. Text uses a larger system font without external font downloads.
+
+Run `npm run test:tabletop` to validate all 100 scenarios; `npm run test:cloud` checks cancellation, immutable-shard validation, crash recovery and remote cancellation without cloud writes or AI calls.
+
+### Active Python environment (POSIX and Windows)
+
+The npm cloud-build and Playwright commands use the activated environment's `python`, not a hard-coded POSIX virtualenv path. Activate before running them:
+
+```sh
+# macOS / Linux
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+npm run build:cloud
+```
+
+```powershell
+# Windows PowerShell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+npm run build:cloud
+```
+
 ### Try it
 
 1. Open the live lab. The 4/9-view hand simulation needs no login; double-click a hand to focus, pause or reseed it.
