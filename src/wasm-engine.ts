@@ -47,8 +47,8 @@ export class WasmEngine {
     try { data.qpos.set(qpos); this.mj.mj_forward(this.model, data); return this.state(data); }
     finally { data.delete(); }
   }
-  replayRecorded(row: Episode, index: number) {
-    return { ...this.replay(row.qpos[index]), time: row.time[index], qvel: row.qvel[index], ctrl: row.ctrl[index], contacts: row.contacts[index], actuator_force: row.actuator_force[index], external_force: row.external_force[index] };
+  replayRecorded(row: Omit<Episode, 'actuator_force' | 'external_force'> & Partial<Pick<Episode, 'actuator_force' | 'external_force'>>, index: number) {
+    return { ...this.replay(row.qpos[index]), time: row.time[index], qvel: row.qvel[index], ctrl: row.ctrl[index], contacts: row.contacts[index], actuator_force: row.actuator_force?.[index] ?? null, external_force: row.external_force?.[index] ?? null };
   }
   state(data: MjData): State {
     return { time: data.time, positions: matrix(data.geom_xpos, 3), rotations: matrix(data.geom_xmat, 9), qpos: Array.from(data.qpos), qvel: Array.from(data.qvel), ctrl: Array.from(data.ctrl), contacts: data.ncon };

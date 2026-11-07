@@ -185,5 +185,6 @@ def replay(ident: str, episode_id: int):
         mujoco.mj_forward(model, data)
         frames.append({'time': timestamp, 'positions': data.geom_xpos.tolist(), 'rotations': data.geom_xmat.tolist(), 'qpos': qpos,
                        'qvel': row['qvel'][index], 'ctrl': row['ctrl'][index], 'contacts': row['contacts'][index],
-                       'actuator_force': row['actuator_force'][index], 'external_force': row['external_force'][index]})
+                       'actuator_force': row['actuator_force'][index] if row.get('actuator_force') is not None else None,
+                       'external_force': row['external_force'][index] if row.get('external_force') is not None else None})
     return {'recipe': row['recipe'], 'frames': frames, 'valid': row['valid']}

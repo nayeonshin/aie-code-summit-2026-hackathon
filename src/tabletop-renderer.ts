@@ -14,13 +14,13 @@ export class TabletopRenderer {
   private matrix = new THREE.Matrix4();
   private resize: ResizeObserver;
   private animation = 0;
-  constructor(private canvas: HTMLCanvasElement) {
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  constructor(private canvas: HTMLCanvasElement, private shared?: { renderer: THREE.WebGLRenderer; viewport: HTMLElement }) {
+    this.renderer = shared?.renderer ?? new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    if (!shared) this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.4;
-    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.enabled = !shared;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.scene.add(new THREE.HemisphereLight('#ffffff', '#aca895', 3));
     const key = new THREE.DirectionalLight('#fff7e5', 3);
@@ -32,16 +32,16 @@ export class TabletopRenderer {
     // MuJoCo is Z-up. Keep all geometry/cameras in that coordinate system.
     floor.rotation.set(0, 0, 0); floor.position.z = .08; floor.receiveShadow = true; this.scene.add(floor);
     this.camera.up.set(0, 0, 1);
-    this.controls = new OrbitControls(this.camera, canvas);
+    this.controls = new OrbitControls(this.camera, shared?.viewport ?? canvas);
     this.controls.enableDamping = true; this.controls.minDistance = .5; this.controls.maxDistance = 2.6;
     this.controls.maxPolarAngle = Math.PI / 2 - .06; this.controls.target.set(0, 0, .77);
     this.resetCamera();
-    this.resize = new ResizeObserver(() => this.fit()); this.resize.observe(canvas); this.fit();
-    this.draw();
+    this.resize = new ResizeObserver(() => this.fit()); this.resize.observe(shared?.viewport ?? canvas); this.fit();
+    if (!shared) this.draw();
   }
   resetCamera = () => { this.camera.position.set(.95, -1.25, 1.65); this.controls.target.set(0, 0, .77); this.controls.update(); };
-  private fit() { const rect = this.canvas.getBoundingClientRect(); this.renderer.setSize(rect.width, rect.height, false); this.camera.aspect = rect.width / Math.max(1, rect.height); this.camera.updateProjectionMatrix(); }
-  private clear(group: THREE.Group) { group.traverse(object => { if (object instanceof THREE.Mesh) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(m => m.dispose()); } }); group.clear(); }
+  private fit() { const rect = (this.shared?.viewport ?? this.canvas).getBoundingClientRect(); if (!this.shared) this.renderer.setSize(rect.width, rect.height, false); this.camera.aspect = rect.width / Math.max(1, rect.height); this.camera.updateProjectionMatrix(); }
+  private clear(group: THREE.Group) { group.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Line) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(m => m.dispose()); } }); group.clear(); }
   load(episode: TableEpisode) {
     this.clear(this.stage); this.clear(this.props);
     this.objects = episode.geoms.map(g => {
@@ -71,6 +71,14 @@ export class TabletopRenderer {
   frame(frame: TableFrame) {
     this.objects.forEach((object, i) => { const p = frame.positions[i], r = frame.rotations[i]; this.matrix.set(r[0], r[1], r[2], 0, r[3], r[4], r[5], 0, r[6], r[7], r[8], 0, 0, 0, 0, 1); object.position.set(p[0], p[1], p[2]); object.quaternion.setFromRotationMatrix(this.matrix); });
   }
-  private draw = () => { this.controls.update(); this.renderer.render(this.scene, this.camera); this.animation = requestAnimationFrame(this.draw); };
-  dispose() { cancelAnimationFrame(this.animation); this.resize.disconnect(); this.controls.dispose(); this.clear(this.stage); this.clear(this.props); this.scene.traverse(o => { if (o instanceof THREE.Mesh) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); } }); this.renderer.dispose(); }
+  private draw = () => { if (!document.hidden && this.canvas.clientWidth > 0) { this.controls.update(); this.renderer.render(this.scene, this.camera); } this.animation = requestAnimationFrame(this.draw); };
+  render() {
+    if (this.shared) {
+      const rect = this.shared.viewport.getBoundingClientRect(), parent = this.canvas.getBoundingClientRect();
+      this.renderer.setViewport(rect.left - parent.left, parent.bottom - rect.bottom, rect.width, rect.height);
+      this.renderer.setScissor(rect.left - parent.left, parent.bottom - rect.bottom, rect.width, rect.height);
+    }
+    this.controls.update(); this.renderer.render(this.scene, this.camera);
+  }
+  dispose() { cancelAnimationFrame(this.animation); this.resize.disconnect(); this.controls.dispose(); this.clear(this.stage); this.clear(this.props); this.scene.traverse(o => { if (o instanceof THREE.Mesh) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); } else if (o instanceof THREE.Light && 'shadow' in o) (o as THREE.DirectionalLight).shadow.dispose(); }); if (!this.shared) this.renderer.dispose(); }
 }
