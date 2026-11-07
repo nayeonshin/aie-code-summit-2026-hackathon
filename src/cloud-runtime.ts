@@ -13,7 +13,7 @@ export async function cloudFetch(url: string, options: RequestInit = {}) {
 }
 
 type Manifest = { id: string; attempted: number; status: string; config: { count: number; seconds: number; seed: number; variants?: unknown[]; provenance?: Record<string, unknown> } };
-type RPC = { resolve: (data: any) => void; reject: (error: Error) => void };
+type RPC = { worker: Worker; resolve: (data: any) => void; reject: (error: Error) => void };
 export class CloudRuntime {
   readyState: number = WebSocket.OPEN;
   description!: Description;
@@ -26,13 +26,17 @@ export class CloudRuntime {
   private cancelled = new Set<string>();
   private active = false;
   async init() {
-    const data = await this.initialize(this.liveWorker);
-    this.description = data.description; this.provenance = data.provenance;
-    return this;
+    try {
+      const data = await this.initialize(this.liveWorker);
+      this.description = data.description; this.provenance = data.provenance;
+      return this;
+    } catch (error) { this.close(); throw error; }
   }
   private initialize(worker: Worker): Promise<any> {
     return new Promise((resolve, reject) => {
-      worker.onerror = event => { reject(new Error(event.message)); this.onerror?.(event.message); };
+      const fail = (message: string) => { const error = new Error(message); reject(error); this.rejectWorker(worker, error); this.onerror?.(message); };
+      worker.onerror = event => fail(event.message || 'Physics worker crashed.');
+      worker.onmessageerror = () => fail('Physics worker response could not be decoded.');
       worker.onmessage = event => {
         const data = event.data;
         if (data.type === 'ready') resolve(data);
@@ -47,10 +51,11 @@ export class CloudRuntime {
   }
   private rpc(worker: Worker, type: string, data: object): Promise<any> {
     const id = crypto.randomUUID();
-    return new Promise((resolve, reject) => { this.requests.set(id, { resolve, reject }); worker.postMessage({ type, id, ...data }); });
+    return new Promise((resolve, reject) => { this.requests.set(id, { worker, resolve, reject }); try { worker.postMessage({ type, id, ...data }); } catch (error) { this.requests.delete(id); reject(error as Error); } });
   }
+  private rejectWorker(worker: Worker, error: Error) { for (const [id, request] of this.requests) if (request.worker === worker) { this.requests.delete(id); request.reject(error); } }
   send(data: string) { this.liveWorker.postMessage({ type: 'command', ...JSON.parse(data) }); }
-  close() { this.liveWorker.terminate(); this.batchWorker?.terminate(); this.readyState = WebSocket.CLOSED; }
+  close() { this.readyState = WebSocket.CLOSED; this.rejectWorker(this.liveWorker, new Error('Workspace closed.')); this.liveWorker.terminate(); if (this.batchWorker) { this.rejectWorker(this.batchWorker, new Error('Workspace closed.')); this.batchWorker.terminate(); } }
   async api(url: string, options?: RequestInit): Promise<any> {
     if (url === '/api/runs' && options?.method === 'POST') {
       if (this.active) throw new Error('This tab is already generating a dataset.');
@@ -87,20 +92,25 @@ export class CloudRuntime {
       for (const field of ['mujoco_version', 'model_sha256', 'recipe_version', 'controller_version', 'rng']) {
         if (manifest.config.provenance?.[field] !== this.provenance[field]) throw new Error('Cannot resume after the physics model/runtime changed. Start a new run.');
       }
-      while (manifest.attempted < manifest.config.count && !this.cancelled.has(id)) {
+      while (manifest.status === 'running' && manifest.attempted < manifest.config.count && !this.cancelled.has(id) && this.readyState !== WebSocket.CLOSED) {
         const { rows }: { rows: Episode[] } = await this.rpc(this.batchWorker, 'batch', { ...manifest.config, first: manifest.attempted, size: 10 });
         const stream = new Blob([JSON.stringify(rows)]).stream().pipeThrough(new CompressionStream('gzip'));
         const compressed = await new Response(stream).arrayBuffer();
         // Retry the same immutable shard. The server accepts duplicates idempotently.
         for (let attempt = 0; ; attempt++) {
           try { manifest = await cloudFetch(`/api/runs/${id}/shards/${rows[0].episode_id}`, { method: 'PUT', headers: { 'Content-Type': 'application/gzip' }, body: compressed }); break; }
-          catch (error) { if (attempt >= 3) throw error; await new Promise(resolve => setTimeout(resolve, 1000 * 2 ** attempt)); }
+          catch (error) {
+            // Another client may have cancelled while this batch was computing.
+            const latest: Manifest = await cloudFetch(`/api/runs/${id}`);
+            if (latest.status !== 'running') return;
+            if (attempt >= 3) throw error; await new Promise(resolve => setTimeout(resolve, 1000 * 2 ** attempt));
+          }
         }
       }
     } catch (error) {
       this.batchWorker?.terminate(); this.batchWorker = undefined;
       this.onerror?.((error as Error).message);
-      await cloudFetch(`/api/runs/${id}/pause`, { method: 'POST' }).catch(() => {});
+      if (this.readyState !== WebSocket.CLOSED) await cloudFetch(`/api/runs/${id}/pause`, { method: 'POST' }).catch(() => {});
     } finally { this.active = false; }
   }
 }

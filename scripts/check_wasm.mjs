@@ -31,7 +31,15 @@ try {
       const row = sim.record(20, 0);
       assert.equal(row.time.length, 600);
       assert.ok(row.valid, recipe);
-      assert.ok(row.objective_pass, recipe);
+       assert.ok(row.objective_pass, recipe);
+       const replay = engine.replayRecorded(row, 15);
+       for (const field of ['time', 'qpos', 'qvel', 'ctrl', 'contacts', 'actuator_force', 'external_force']) assert.deepEqual(replay[field], row[field][15]);
+       const measured = engine.replayRecorded({ ...row, contacts: row.contacts.map(() => 7) }, 15);
+        assert.equal(measured.contacts, 7); // Forward kinematics must not replace saved contact measurements.
+        const { external_force, ...legacy } = row;
+        const legacyReplay = engine.replayRecorded(legacy, 15);
+        assert.equal(legacyReplay.external_force, null);
+        for (const field of ['qvel', 'ctrl', 'contacts', 'actuator_force']) assert.deepEqual(legacyReplay[field], row[field][15]);
       if (recipe === 'recovery') assert.ok(row.external_force.some(f => f.some(v => v !== 0)));
     } finally { sim.dispose(); }
   }

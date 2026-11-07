@@ -1,0 +1,56 @@
+import { test, expect } from '@playwright/test';
+
+test('tabletop collection, navigation, real playback, and export', async ({ page }) => {
+  test.setTimeout(120000);
+  const errors: string[] = [];
+  await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
+  await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Grid', exact: true })).toBeVisible();
+  await expect(page.locator('.tt-card')).toHaveCount(100);
+  await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
+  await expect(page.locator('[role=alert]')).toHaveCount(0);
+  await expect.poll(async () => Number(await page.getByLabel('Tabletop playback position').inputValue())).toBeGreaterThan(1);
+  await page.getByLabel('Pause tabletop playback').click();
+  await page.getByLabel('Tabletop playback position').fill('150');
+  await expect(page.locator('.tt-scene-badge')).toHaveCount(0);
+  const position = await page.getByLabel('Tabletop playback position').inputValue();
+  await page.waitForTimeout(200);
+  await expect(page.getByLabel('Tabletop playback position')).toHaveValue(position);
+  await page.screenshot({ path: 'test-results/tabletop-desktop.png' });
+  await page.getByRole('button', { name: 'Cup to cup 25', exact: true }).click();
+  await expect(page.locator('.tt-card')).toHaveCount(25);
+  await page.getByLabel('Episode 76: Pour into receiving cup').click();
+  await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
+  await page.getByRole('button', { name: 'Data & AI', exact: true }).click();
+  await expect(page.locator('.data-body')).toContainText('36 rigid particles');
+  await page.getByLabel('Close data explorer').click();
+  await page.getByLabel('Tabletop playback position').fill('180');
+  await page.screenshot({ path: 'test-results/tabletop-pour.png' });
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByLabel('Download simulated episode').click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe('tabletop-076.json');
+  await page.getByLabel('Next simulation').click();
+  await expect(page.getByLabel('Selected episode', { exact: true })).toHaveText('77');
+  await page.getByLabel('Search simulations').fill('no such study');
+  await expect(page.locator('.tt-empty')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('mobile simulation browser fits and closes after selection', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
+  await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
+  await page.goto('/');
+  await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
+  await page.getByRole('button', { name: 'Browse', exact: true }).click();
+  await expect(page.getByLabel('Simulation library')).toBeVisible();
+  await page.getByLabel('Episode 2: Pick & place · sphere').click();
+  await expect(page.getByLabel('Simulation library')).toBeHidden();
+  await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await page.screenshot({ path: 'test-results/tabletop-mobile.png' });
+});

@@ -2,7 +2,7 @@ import hashlib
 import json
 from pathlib import Path
 
-PLAN = json.loads((Path(__file__).resolve().parents[1] / 'config/objectives.json').read_text())
+PLAN = json.loads((Path(__file__).resolve().parents[1] / 'config/objectives.json').read_text(encoding='utf-8'))
 OBJECTIVES = PLAN['objectives']
 
 def allocation(count):

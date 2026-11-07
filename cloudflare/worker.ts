@@ -1,4 +1,5 @@
 import { plan, recipes, allocation, schedule, type Variant } from '../src/objectives';
+import { validateTableVariants } from '../src/tabletop-scenarios';
 
 interface Env { ASSETS: Fetcher; DATA: R2Bucket; COORDINATOR: DurableObjectNamespace; ADMIN_TOKEN: string; SUBQ_API_KEY?: string; MODEL_API_KEY?: string; META_MODEL: string; AI_BUDGET_USD: string }
 type Manifest = { id: string; schema_version: number; status: string; attempted: number; valid: number; objective_passed: number; annotated: number; updated_at: string; coverage: Record<string, number>; shards: { file: string; first: number; episodes: number; sha256: string; bytes: number }[]; config: { count: number; seconds: number; seed: number; objective_quotas: Record<string, number>; provenance: unknown; variants?: Variant[] } };
@@ -6,7 +7,7 @@ const json = (value: unknown, status = 200) => Response.json(value, { status, he
 const bad = (detail: string, status = 400) => json({ detail }, status);
 const sha = async (value: BufferSource) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', value))].map(n => n.toString(16).padStart(2, '0')).join('');
 const manifestKey = (id: string) => `runs/${id}/manifest.json`;
-const summary = (m: Manifest) => { const { shards, ...rest } = m; return rest; };
+const summary = (m: Manifest) => { const { shards, ...rest } = m; return { ...rest, status: m.status === 'running' && Date.now() - Date.parse(m.updated_at) > 120000 ? 'interrupted' : m.status }; };
 const validId = (id: string) => /^[a-z0-9-]{1,64}$/.test(id);
 async function readManifest(env: Env, id: string): Promise<Manifest | null> { const item = await env.DATA.get(manifestKey(id)); return item ? item.json<Manifest>() : null; }
 async function writeManifest(env: Env, m: Manifest) { m.updated_at = new Date().toISOString(); await env.DATA.put(manifestKey(m.id), JSON.stringify(m), { httpMetadata: { contentType: 'application/json' } }); return json(m); }
@@ -31,6 +32,7 @@ export default {
     const url = new URL(request.url), path = url.pathname;
     try {
       if (path === '/api/health') return json({ runtime: 'browser-wasm', subq_configured: !!env.SUBQ_API_KEY, meta_configured: !!env.MODEL_API_KEY, recipes });
+      if (path === '/api/tabletop/plans/latest' && request.method === 'GET') { const object = await env.DATA.get('tabletop/latest-plan.json'); return object ? json(await object.json()) : bad('No Muse tabletop plan has been generated yet.', 404); }
       if (request.method !== 'GET' && request.method !== 'HEAD') {
         if (!env.ADMIN_TOKEN || request.headers.get('Authorization') !== `Bearer ${env.ADMIN_TOKEN}`) return bad('Cloud writes and AI calls require the admin token (key icon).', 401);
         const origin = request.headers.get('Origin');
@@ -40,7 +42,7 @@ export default {
         const catalog = await env.DATA.get('catalog/runs.json');
         const ids = catalog ? await catalog.json<string[]>() : [];
         const manifests = await Promise.all(ids.slice(0, 20).map(id => readManifest(env, id)));
-        return json(manifests.filter((m): m is Manifest => !!m).map(m => ({ ...summary(m), status: m.status === 'running' && Date.now() - Date.parse(m.updated_at) > 120000 ? 'interrupted' : m.status })).sort((a, b) => b.updated_at.localeCompare(a.updated_at)));
+        return json(manifests.filter((m): m is Manifest => !!m).map(summary).sort((a, b) => b.updated_at.localeCompare(a.updated_at)));
       }
       const runMatch = path.match(/^\/api\/runs\/([a-z0-9-]+)$/);
       if (runMatch && request.method === 'GET') { const m = await readManifest(env, runMatch[1]); return m ? json(summary(m)) : bad('Run not found.', 404); }
@@ -108,13 +110,17 @@ export class Coordinator {
       const digest = await sha(compressed);
       const existing = m.shards.find(s => s.first === first);
       if (existing) return existing.sha256 === digest ? json(summary(m)) : bad('Conflicting shard already committed.', 409);
-      if (first !== m.attempted || m.status === 'complete') return bad('Shard does not match the next checkpoint.', 409);
+      if (m.status !== 'running') return bad(`Run is ${m.status}; explicitly resume before submitting new shards.`, 409);
+      if (first !== m.attempted) return bad('Shard does not match the next checkpoint.', 409);
       const decoded = await boundedBody(new Request('https://decode.local', { method: 'POST', body: new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip')) }), 16 * 1024 * 1024);
       const rows = JSON.parse(new TextDecoder().decode(decoded));
       if (!Array.isArray(rows) || rows.length < 1 || rows.length > 10 || first + rows.length > m.config.count) return bad('Invalid shard length.');
       const objectives = schedule(m.config.count, m.config.seed);
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
+        if (!Array.isArray(row.time) || row.time.length !== 600 || row.time.some((t: unknown, index: number) => typeof t !== 'number' || !Number.isFinite(t) || t < 0 || (index > 0 && t <= row.time[index - 1])) ||
+            !Array.isArray(row.contacts) || row.contacts.length !== 600 || row.contacts.some((n: unknown) => !Number.isSafeInteger(n) || (n as number) < 0) ||
+            typeof row.valid !== 'boolean' || typeof row.objective_pass !== 'boolean' || (row.objective_pass && !row.valid)) return bad('Invalid timestamps, contacts, or validity flags.');
         if (row.episode_id !== first + i || row.recipe !== objectives[first + i] || row.seconds !== 20 || row.time?.length !== 600 || ['qpos', 'qvel', 'ctrl', 'actuator_force', 'external_force'].some(key => row[key]?.length !== 600 || row[key].some((a: unknown[]) => !Array.isArray(a) || a.length !== 16 || a.some(n => typeof n !== 'number' || !Number.isFinite(n))))) return bad('Invalid episode schema or objective schedule.');
       }
       const file = `shard-${String(first).padStart(6, '0')}.json.gz`;
@@ -129,11 +135,14 @@ export class Coordinator {
     if (control && request.method === 'POST') {
       const m = await readManifest(env, control[1]); if (!m) return bad('Run not found.', 404);
       if (m.status === 'complete') return bad('Run is already complete.', 409);
+      // Cleanup from a failed/stale client must not overwrite another tab's cancellation.
+      if (control[2] === 'pause' && m.status !== 'running') return json(summary(m));
       m.status = control[2] === 'resume' ? 'running' : control[2] === 'cancel' ? 'cancelled' : 'interrupted';
       return writeManifest(env, m);
     }
     if (path === '/api/annotate' && request.method === 'POST') return this.annotate(request);
     if (path === '/api/plans' && request.method === 'POST') return this.metaPlan(request);
+    if (path === '/api/tabletop/plans' && request.method === 'POST') return this.tabletopPlan(request);
     if (path === '/api/budget' && request.method === 'POST') return json({ reserved_usd: (await this.state.storage.get('ai_reserved_usd')) ?? 0, cap_usd: Number(env.AI_BUDGET_USD) });
     return bad('Unknown mutation route.', 404);
   }
@@ -142,6 +151,28 @@ export class Coordinator {
     if (spent + amount > Number(this.env.AI_BUDGET_USD || 100)) throw new Error('AI budget cap reached.');
     // Conservative reservation remains charged locally even if a request fails.
     await this.state.storage.put('ai_reserved_usd', spent + amount);
+  }
+  private async tabletopPlan(request: Request) {
+    if (!this.env.MODEL_API_KEY) return bad('Meta API key is not configured.', 503);
+    const input = JSON.parse(new TextDecoder().decode(await boundedBody(request, 8000)));
+    const count = input.count ?? 1000;
+    if (!Number.isInteger(count) || count < 100 || count > 5000) return bad('Use 100–5000 tabletop scenarios.');
+    await this.reserve(.50);
+    const bounds: Record<string, [number, number]> = { size: [.02, .035], mass: [.035, .14], friction: [.3, 1.2], speed: [.9, 1.08], lift: [.12, .22], lateral: [-.04, .04], startY: [-.10, .10], goalY: [-.10, .10] };
+    const properties = { task: { type: 'string', enum: ['transfer', 'push', 'stack', 'pour'] }, shape: { type: 'string', enum: ['cube', 'sphere', 'cylinder'] }, ...Object.fromEntries(Object.entries(bounds).map(([key, [minimum, maximum]]) => [key, { type: 'number', minimum, maximum }])), rationale: { type: 'string' } };
+    const schema = { type: 'object', additionalProperties: false, required: ['variants'], properties: { variants: { type: 'array', minItems: 24, maxItems: 24, items: { type: 'object', additionalProperties: false, required: Object.keys(properties), properties } } } };
+    const response = await fetch('https://api.meta.ai/v1/responses', { method: 'POST', headers: { Authorization: `Bearer ${this.env.MODEL_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'muse-wonder-1.0', store: false, max_output_tokens: 24000, reasoning: { effort: 'low' },
+      input: `Design exactly 24 physically bounded robotic tabletop manipulation variants, balanced 6 each transfer, push, stack, pour, interleaved. Cross task/shape, high/low mass and friction, object size, path curvature, motion speed, lift clearance, source and target Y positions. Each numeric field MUST stay inside ${JSON.stringify(bounds)}. Include a brief rationale explaining the intended diversity axis. Units are meters, kilograms, and speed multipliers. Do not claim successful grasping. The simulator uses assisted grasps and 36 rigid pouring particles. Pour cup geometry/tilt/clearance remain fixed; size refers to movable solid shapes only. No executable code. User focus: ${String(input.focus ?? 'broad balanced contact and motion diversity').slice(0, 1000)}`,
+      text: { format: { type: 'json_schema', name: 'TabletopDiversity', strict: true, schema } } }), signal: AbortSignal.timeout(90000) });
+    if (!response.ok) return bad(`Muse returned HTTP ${response.status}.`, 502);
+    const body = await response.json<any>();
+    if (body.status && body.status !== 'completed') return bad(`Muse output incomplete (${body.incomplete_details?.reason ?? body.status}); no plan was applied.`, 502);
+    const text = body.output?.flatMap((o: any) => o.content ?? []).filter((c: any) => c.type === 'output_text').map((c: any) => c.text).join('') ?? '';
+    const variants = validateTableVariants(JSON.parse(text).variants);
+    const result = { id: crypto.randomUUID(), model: 'muse-wonder-1.0', created_at: new Date().toISOString(), count, variants, usage: body.usage, source: 'Muse parameter proposals; MuJoCo results are separate' };
+    await this.env.DATA.put(`tabletop/plans/${result.id}.json`, JSON.stringify(result));
+    await this.env.DATA.put('tabletop/latest-plan.json', JSON.stringify(result));
+    return json(result);
   }
   private async annotate(request: Request) {
     if (!this.env.SUBQ_API_KEY) return bad('SubQ is not configured.', 503);

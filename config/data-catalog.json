@@ -1,0 +1,172 @@
+{
+  "dataset_url": "https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation",
+  "collections": [
+    {
+      "id": "tabletop-grip-v2",
+      "label": "Palm-aligned tabletop manipulation",
+      "episodes": 100,
+      "source": "MuJoCo 4 WASM + Muse proposals",
+      "description": "12s, custom five-finger hand, geometry-calibrated assisted grips. Cups use rigid particles, not continuum water.",
+      "path": "tabletop"
+    },
+    {
+      "id": "objectives100-20s",
+      "label": "objectives100-20s",
+      "episodes": 100,
+      "source": "native MuJoCo / hand-only",
+      "description": "20.0s episodes. No tabletop objects or Muse proposals. Preserve original controller provenance.",
+      "path": "hand-native/objectives100-20s"
+    },
+    {
+      "id": "objectives100",
+      "label": "objectives100",
+      "episodes": 100,
+      "source": "native MuJoCo / hand-only",
+      "description": "5.0s episodes. No tabletop objects or Muse proposals. Preserve original controller provenance.",
+      "path": "hand-native/objectives100"
+    },
+    {
+      "id": "pilot90",
+      "label": "pilot90",
+      "episodes": 90,
+      "source": "native MuJoCo / hand-only",
+      "description": "5s episodes. No tabletop objects or Muse proposals. Preserve original controller provenance.",
+      "path": "hand-native/pilot90"
+    },
+    {
+      "id": "7c850e6a-ff7f-4a42-9c12-375c2e28549b",
+      "label": "Browser production hand pilot",
+      "episodes": 100,
+      "source": "browser MuJoCo + Muse hand-only anchors",
+      "description": "Archived 20s four-finger hand trajectories, not object manipulation. Original browser controller is preserved.",
+      "path": "hand-browser"
+    }
+  ],
+  "tabletop": {
+    "planned": 1000,
+    "recorded": 100
+  },
+  "muse": {
+    "model": "muse-wonder-1.0",
+    "variants": 24,
+    "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+    "rationale": [
+      "small, light, slippery: low-drag flight payload",
+      "high road-sweep friction; heavy box-winch",
+      "pour size mass mapping: release angle sensitivity",
+      "light wedge pick",
+      "slippery-heavy pour: particle stream coherence",
+      "heaviest max-grip pour stream",
+      "heavy max-grip: stable transfer",
+      "heavy-mid grip: push yaw on curve",
+      "heavy high-grip: pour width sweep",
+      "easy stack: heavy block cushions sway",
+      "heavy-slippery push: overshoot carrier",
+      "heaviest max-grip pour stream",
+      "heavy max-grip: stable transfer",
+      "heavy-mid grip: push yaw on curve",
+      "heavy high-grip: pour width sweep",
+      "easy stack: heavy block cushions sway",
+      "heavy-slippery push: overshoot carrier",
+      "heaviest max-grip pour stream",
+      "heavy max-grip: stable transfer",
+      "heavy-mid grip: push yaw on curve",
+      "heavy high-grip: pour width sweep",
+      "easy stack: heavy block cushions sway",
+      "high-clearance heavy puck: arc-contact diversity",
+      "light slippery prism: long lateral push drift"
+    ]
+  },
+  "subq": [
+    {
+      "model": "subq-snap-1.1",
+      "answers": {
+        "movement": {
+          "type": "choice",
+          "choice": "flex",
+          "probabilities": {
+            "flex": 0.9715267419815063,
+            "point": 0.001292274915613234,
+            "pinch": 0.010160991922020912,
+            "wave": 0.003916176501661539,
+            "tripod": 0.0004661529092118144,
+            "spread": 0.0009197238250635564,
+            "sequence": 0.0007145101553760469,
+            "opposition": 0.003477034391835332,
+            "roll": 0.0026585161685943604,
+            "unclear": 0.004867942538112402
+          },
+          "confidence": 0.9683630466461182
+        },
+        "coordination": {
+          "type": "score",
+          "score": 1.8770772702991962,
+          "legend": {
+            "0": "Cannot assess or incoherent",
+            "1": "Partly coordinated",
+            "2": "Clearly coordinated"
+          },
+          "probabilities": {
+            "0": 0.05142352357506752,
+            "1": 0.020075727254152298,
+            "2": 0.928500771522522
+          },
+          "confidence": 0.815615838393569
+        }
+      },
+      "usage": {
+        "input_tokens": 2120,
+        "output_tokens": 0
+      },
+      "input_sha256": "7157c32c678015d60192d80d9d7636fa88840a14a97b059c3f696974d73ef671",
+      "image_count": 4,
+      "advisory": true,
+      "scope": "hand-only visual sample; source episode/run association not recorded"
+    },
+    {
+      "model": "subq-snap-1.1",
+      "answers": {
+        "movement": {
+          "type": "choice",
+          "choice": "flex",
+          "probabilities": {
+            "flex": 0.8971200585365295,
+            "point": 0.005677201319485903,
+            "pinch": 0.04643160477280617,
+            "wave": 0.006541760638356209,
+            "tripod": 0.008464193902909756,
+            "spread": 0.003317556343972683,
+            "sequence": 0.001957761589437723,
+            "opposition": 0.013918288052082062,
+            "roll": 0.004573771730065346,
+            "unclear": 0.011998079717159271
+          },
+          "confidence": 0.8856889539294772
+        },
+        "coordination": {
+          "type": "score",
+          "score": 1.8427468426525593,
+          "legend": {
+            "0": "Cannot assess or incoherent",
+            "1": "Partly coordinated",
+            "2": "Clearly coordinated"
+          },
+          "probabilities": {
+            "0": 0.056477878242731094,
+            "1": 0.04429732635617256,
+            "2": 0.8992247581481934
+          },
+          "confidence": 0.7641203757375479
+        }
+      },
+      "usage": {
+        "input_tokens": 2338,
+        "output_tokens": 0
+      },
+      "input_sha256": "d2db7ade869e8d68bc51e55186f983e6d384290890056df0207bb93523f12f42",
+      "image_count": 4,
+      "advisory": true,
+      "scope": "hand-only visual sample; source episode/run association not recorded"
+    }
+  ]
+}

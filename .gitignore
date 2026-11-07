@@ -15,3 +15,4 @@ models/leap_hand/right_hand.xml
 .dev.vars
 .wrangler/
 public/model/
+public/data/

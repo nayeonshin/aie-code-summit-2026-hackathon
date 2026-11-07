@@ -10,7 +10,7 @@ const started = performance.now();
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   page.on('pageerror', error => console.log('Browser error:', error.message));
-  await page.goto(url);
+  await page.goto(url + '/#hands');
   await page.locator('.status').filter({ hasText: 'LIVE' }).waitFor({ timeout: 120000 });
   await page.getByRole('button', { name: 'Unlock cloud generation' }).click();
   await page.getByLabel('Cloud admin token').fill(token);

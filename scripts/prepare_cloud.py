@@ -14,6 +14,12 @@ def main():
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source / name, target)
     (output / 'manifest.json').write_text(json.dumps({'files': files, 'provenance': provenance()}, indent=2))
+    for name in ('data-catalog.json', 'tabletop-plan.json'):
+        snapshot = ROOT / 'config' / name
+        if snapshot.exists():
+            public_data = ROOT / 'public/data'
+            public_data.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(snapshot, public_data / ('catalog.json' if name == 'data-catalog.json' else name))
     print(f'Prepared {len(files)} licensed model files for deployment.')
 
 if __name__ == '__main__': main()

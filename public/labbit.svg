@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <title>Labbit — a rabbit in profile</title>
-  <path d="M20 48c-9-3-10-13-1-19-3-7-5-19-2-22 4-3 10 13 12 22 5-1 10 1 13 5l9 4c4 3-2 6-7 6-3 8-16 9-24 4Z" stroke="#4a5842" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="36" cy="35" r="1.3" fill="#4a5842"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 144" fill="none">
+  <title>Labbit rabbit mark</title>
+  <path d="M49 62C51 38 45 8 38 7C28 13 27 44 34 67C15 79 8 98 15 115C21 131 36 138 51 140" stroke="#141414" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="35" cy="102" r="4.5" fill="#141414"/>
 </svg>
