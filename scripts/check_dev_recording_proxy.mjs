@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createServer as createHTTPServer } from 'node:http';
-import { readFileSync, mkdtempSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createServer } from 'vite';
@@ -17,10 +17,13 @@ const upstream = createHTTPServer((request, response) => {
   response.setHeader('Set-Cookie', 'upstream-secret=value');
   response.end('public recording');
 });
-await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
-const cacheDir = mkdtempSync(join(tmpdir(), 'opencode/labbit-proxy-test-'));
-const vite = await createServer({ configFile: false, cacheDir, optimizeDeps: { noDiscovery: true, include: [], entries: [] }, plugins: [publicRecordingProxy(`http://127.0.0.1:${upstream.address().port}`)], server: { host: '127.0.0.1', port: 0 } });
+const parent = join(tmpdir(), 'opencode');
+mkdirSync(parent, { recursive: true });
+const cacheDir = mkdtempSync(join(parent, 'labbit-proxy-test-'));
+let vite;
 try {
+  await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
+  vite = await createServer({ configFile: false, cacheDir, optimizeDeps: { noDiscovery: true, include: [], entries: [] }, plugins: [publicRecordingProxy(`http://127.0.0.1:${upstream.address().port}`)], server: { host: '127.0.0.1', port: 0 } });
   await vite.listen();
   const base = `http://127.0.0.1:${vite.httpServer.address().port}`;
   const response = await fetch(base + path, { headers: { Cookie: 'local-secret=value', Authorization: 'Bearer local-secret', Origin: 'http://localhost:5173', 'X-Admin-Token': 'local-secret', 'X-Custom-Secret': 'local-secret' } });
@@ -38,6 +41,9 @@ try {
   assert.equal(received.length, 1, 'Invalid requests must never leave localhost');
   console.log('Actual Vite-to-upstream public read: credential stripping, response filtering, method/path/revision/query restrictions passed.');
 } finally {
-  await vite.close();
-  await new Promise(resolve => upstream.close(resolve));
+  try { await vite?.close(); }
+  finally {
+    try { await new Promise(resolve => upstream.close(resolve)); }
+    finally { rmSync(cacheDir, { recursive: true, force: true }); }
+  }
 }

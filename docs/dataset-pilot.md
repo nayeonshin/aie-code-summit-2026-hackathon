@@ -21,16 +21,18 @@
 - Conversion verifies indexed standalone compressed sizes/checksums when present. New compact trajectories use immutable SHA-256 filenames, so interrupted rebuilds leave the previous index and all its payloads usable. The loader retains compatibility with the already-published episode filenames; the pinned dataset is unchanged.
 - Inventory outages (including HTML 503 responses) surface errors rather than silently computing published studies. Only 404, or successful HTML in Vite development, means an absent inventory.
 - New selections cancel obsolete trajectory downloads/retry waits. Cancelled consumers detach from shared mesh promises without cancelling reusable geometry; stale results/errors are discarded.
+- Re-review: cancelled on-demand studies also detach from the shared engine initialization and pending tabletop robot assets. Published replay does not wait for abandoned model downloads, and cancelled studies never start simulation when those assets later arrive. Engine initialization remains reusable and resets on failure.
+- The Vite proxy regression creates its temp parent when absent and removes its unique cache directory in teardown, including setup/assertion failures. It was also checked with an initially empty `TMPDIR`.
 - Preview capture checks the app's displayed dataset revision and trajectory checksum against the local inventory before taking any frames. Mismatched attribution aborts capture.
 
 ## Validation
 
 - `python -m pytest -q`: **41 tests passed**, including indexed source corruption and interrupted rebuild regressions.
-- `PLAYWRIGHT_CHROME=1 npm run test:e2e -- tests/browser/{tabletop,grid,recovery,studio,recordings}.spec.ts --workers=2`: **15 tests passed**, including stalled-selection cancellation, inventory outages, a 25-view on-demand grid and keyboard/mobile coverage. A three-worker run passed 14 tests but timed out creating one Chrome context before test execution; the complete two-worker rerun passed.
-- WebKit recorded replay/dropdown suite: **6 tests passed**, including stalled-selection cancellation and inventory outages.
+- `PLAYWRIGHT_CHROME=1 npm run test:e2e -- tests/browser/{tabletop,grid,recovery,studio,recordings}.spec.ts --workers=1`: **19 tests passed**, including stalled-selection cancellation at both engine and tabletop manifest/asset downloads, inventory outages, a 25-view on-demand grid and keyboard/mobile coverage. A two-worker run passed 18 tests but timed out creating one Chrome context before test execution; the complete serial rerun passed.
+- WebKit recorded replay/dropdown suite: **10 tests passed**, including all four stalled physics-download transitions and recorded-to-recorded cancellation.
 - `npm run test:recordings`: all 100 exact browser-loader round trips; 10 shared mesh downloads; mismatched-scenario exclusion and corrupt-download recovery passed.
 - `npm run test:recording-proxy`: fixed revision/file allowlist, credential stripping, checksum rejection and immutable cache passed without external requests.
-- `npm run test:dev-recording-proxy`: actual Vite-to-upstream credential/header filtering and method/path/revision/query restrictions passed against a local HTTP server.
+- `npm run test:dev-recording-proxy`: actual Vite-to-upstream credential/header filtering and method/path/revision/query restrictions passed against a local HTTP server, including an empty-temp-parent run with cache cleanup verified.
 - `npm run test:recording-review`: production/development inventory fallback policy, immutable filenames and preview identity mismatch rejection passed.
 - `npm run test:assets`, `npm run test:cloud`, and `npm run build:cloud`: passed.
 

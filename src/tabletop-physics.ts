@@ -1,5 +1,5 @@
 import type { MainModule, MjModel, MjData } from '@mujoco/mujoco';
-import { fetchAsset } from './asset-fetch';
+import { fetchAsset, withAbort } from './asset-fetch';
 import { duration, sampleHz, type Scenario } from './tabletop-scenarios';
 import { calibrateGrasp, rotateY, graspController } from './grasp';
 
@@ -24,8 +24,11 @@ const cup = (name: string, pos: number[], free: boolean) => `<body name="${name}
   ${Array.from({ length: 16 }, (_, i) => { const a = i * Math.PI / 8; return `<geom name="table_${name}_wall_${i}" type="box" pos="${.049 * Math.cos(a)} ${.049 * Math.sin(a)} .046" quat="${Math.cos(a / 2)} 0 0 ${Math.sin(a / 2)}" size=".004 .010 .046" mass=".005"/>`; }).join('')}
 </body>`;
 
-export async function simulateTabletop(mj: MainModule, scenario: Scenario): Promise<TableEpisode> {
-  const assets = await robotAssets(), s = scenario, pouring = s.task === 'pour';
+export async function simulateTabletop(mj: MainModule, scenario: Scenario, signal?: AbortSignal): Promise<TableEpisode> {
+  // Assets stay shared, but obsolete consumers detach before constructing or
+  // simulating a model when the pending downloads eventually complete.
+  const assets = await withAbort(robotAssets(), signal), s = scenario, pouring = s.task === 'pour';
+  signal?.throwIfAborted();
   const objectZ = top + (pouring ? .004 : s.size);
   const shape = s.shape === 'cube' ? 'box' : s.shape;
   const size = s.shape === 'cube' ? `${s.size} ${s.size} ${s.size}` : s.shape === 'sphere' ? `${s.size}` : `${s.size} ${s.size}`;

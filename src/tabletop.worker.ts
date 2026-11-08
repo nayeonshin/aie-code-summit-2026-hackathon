@@ -2,8 +2,9 @@ import { WasmEngine } from './wasm-engine';
 import { simulateTabletop } from './tabletop-physics';
 import { scenarios, createCollection } from './tabletop-scenarios';
 import { TabletopRecordings } from './tabletop-recordings';
+import { withAbort } from './asset-fetch';
 
-let engine: WasmEngine | undefined;
+let engine: Promise<WasmEngine> | undefined;
 let initialized = false;
 let recordings: TabletopRecordings | null = null;
 async function episodeFor(id: number, signal: AbortSignal) {
@@ -11,9 +12,12 @@ async function episodeFor(id: number, signal: AbortSignal) {
   const published = await recordings?.load(scenario, signal);
   signal.throwIfAborted();
   if (published) return published;
-  engine ??= await WasmEngine.create();
+  // Keep one shared initialization, but never serialize replay behind an
+  // abandoned consumer's WASM/robot downloads. Failed initialization can retry.
+  engine ??= WasmEngine.create().catch(error => { engine = undefined; throw error; });
+  const physics = await withAbort(engine, signal);
   signal.throwIfAborted();
-  return simulateTabletop(engine.mj, scenario);
+  return simulateTabletop(physics.mj, scenario, signal);
 }
 let pending: number | null = null;
 let gridQueue: number[] = [];

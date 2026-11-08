@@ -101,6 +101,50 @@ test('new selection completes while the obsolete recording request is still stal
   } finally { release(); }
 });
 
+for (const stage of ['engine manifest', 'engine asset', 'tabletop manifest', 'tabletop asset']) {
+  test(`published replay starts while obsolete ${stage} download is stalled`, async ({ page }) => {
+    const { files, manifest } = fixture();
+    // The initially selected study is unrecorded; study 2 is published and has
+    // never been loaded, so success cannot be explained by the worker cache.
+    manifest.episodes = manifest.episodes.slice(1); manifest.recorded = manifest.episodes.length;
+    let stalled = false, recordingRequested = false, manifests = 0, assets = 0;
+    let release!: () => void;
+    const blocked = new Promise<void>(resolve => { release = resolve; });
+    await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
+    await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
+    await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ json: manifest }));
+    await page.route('**/fixtures/tabletop/**', route => {
+      const key = new URL(route.request().url()).pathname.replace('/fixtures/tabletop/', '');
+      if (key === manifest.episodes[0].file) recordingRequested = true;
+      return route.fulfill({ body: files.get(key)!, contentType: 'application/gzip' });
+    });
+    await page.route('**/model/**', async route => {
+      const path = new URL(route.request().url()).pathname;
+      const manifestRequest = path === '/model/manifest.json';
+      const assetRequest = path === '/model/right_hand.xml';
+      if (manifestRequest) manifests++;
+      if (assetRequest) assets++;
+      const pass = stage.startsWith('engine') ? 1 : 2;
+      if (stage.endsWith('manifest') ? manifestRequest && manifests === pass : assetRequest && assets === pass) {
+        stalled = true; await blocked;
+      }
+      await route.continue().catch(() => {});
+    });
+    try {
+      await page.goto('/');
+      await expect.poll(() => stalled, { timeout: 20000 }).toBe(true);
+      await page.getByLabel('Next simulation', { exact: true }).click();
+      await expect.poll(() => recordingRequested).toBe(true);
+      await expect(page.getByLabel('Selected episode', { exact: true })).toHaveText('2');
+      await expect(page.locator('.tt-loading')).toHaveCount(0);
+      await expect(page.locator('[role=alert]')).toHaveCount(0);
+      await page.getByRole('button', { name: 'Data & AI', exact: true }).click();
+      await expect(page.locator('.data-selected')).toContainText('Published recording; no physics recomputation.');
+      await expect(page.locator('.data-selected')).toContainText(manifest.episodes[0].sha256);
+    } finally { release(); }
+  });
+}
+
 test('HTML inventory outage is surfaced without physics recomputation', async ({ page }) => {
   let physicsReads = 0;
   await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
