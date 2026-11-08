@@ -1,14 +1,14 @@
 <p align="center">
-  <img src="public/labbit.svg" width="96" height="96" alt="Labbit: a minimal rabbit head and ear in profile" />
+  <img src="docs/media/labbit-logo.svg" width="96" height="96" alt="Labbit logo" />
 </p>
 
 <h1 align="center">Labbit</h1>
 
-<p align="center"><em>A little rabbit. A serious robotics lab.</em></p>
+<p align="center"><em>A simulation-first lab for robot decisions.</em></p>
 
 <p align="center">
   <a href="https://hand-studio.hidden-pond-5e6a.workers.dev">Try the live lab</a> ·
-  <a href="https://hand-studio.hidden-pond-5e6a.workers.dev/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/manifest.json">Explore the generated dataset</a>
+  <a href="https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation">Explore the generated dataset</a>
 </p>
 
 **Labbit** is a play on *lab* and *rabbit*: a minimal live robotic-hand workbench and a reproducible simulation dataset factory. The goal is **100,000 useful, diverse 20-second episodes**.
@@ -148,7 +148,7 @@ The Cloudflare Worker URL and R2 bucket retain their original `hand-studio` infr
 
 ## Data generated so far
 
-Verified inventory, **7 November 2026**. These are completed pilot runs, not a completed 100k dataset. Tests, temporary fixtures and local Wrangler smoke runs are excluded.
+**Archived hand-only inventory, 7 November 2026.** The table below covers the older hand-motion pilots only; the published tabletop collection and in-progress campaign are described above. These are completed pilot runs, not a completed 100k dataset. Tests, temporary fixtures and local Wrangler smoke runs are excluded.
 
 | Run | Location | Episodes | Duration | Frames | Shards | Compressed size |
 |---|---|---:|---:|---:|---:|---:|
