@@ -17,8 +17,11 @@ export function TabletopGrid({ ids, collection, plan, playing, speed, onSelect }
     catch (e) { setError((e as Error).message); return; }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.setScissorTest(true);
     const views = new Map<number, { view: TabletopRenderer; episode: Packed; frame: TableFrame }>();
-    const worker = new Worker(new URL('./tabletop.worker.ts', import.meta.url), { type: 'module' });
-    worker.onmessage = ({ data }) => {
+    // Simulate tiles on a few workers at once: one worker runs 25 studies back to back
+    // (about 5 s each for the hand, ~25 s for the arm), which can outlast a page's patience.
+    const count = Math.max(1, Math.min(ids.length, 4, (navigator.hardwareConcurrency || 2) - 1));
+    const workers = Array.from({ length: count }, () => new Worker(new URL('./tabletop.worker.ts', import.meta.url), { type: 'module' }));
+    const onmessage = ({ data }: MessageEvent) => {
       if (data.type === 'error') setError(data.error);
       if (data.type !== 'gridEpisode') return;
       const episode: Packed = data, viewport = tiles.current.get(data.id);
@@ -28,9 +31,12 @@ export function TabletopGrid({ ids, collection, plan, playing, speed, onSelect }
       view.load({ ...episode, frames: [frame] }); views.set(data.id, { view, episode, frame });
       setLoaded(prev => new Set([...prev, data.id]));
     };
-    worker.onerror = e => setError(e.message || 'Simulation worker failed');
-    if (plan) worker.postMessage({ type: 'collection', plan });
-    worker.postMessage({ type: 'grid', ids }); worker.postMessage({ type: 'init' });
+    workers.forEach((worker, k) => {
+      worker.onmessage = onmessage;
+      worker.onerror = e => setError(e.message || 'Simulation worker failed');
+      if (plan) worker.postMessage({ type: 'collection', plan });
+      worker.postMessage({ type: 'grid', ids: ids.filter((_, i) => i % count === k) }); worker.postMessage({ type: 'init' });
+    });
     const fit = () => { const rect = canvas.current!.getBoundingClientRect(); renderer.setSize(rect.width, rect.height, false); };
     const resize = new ResizeObserver(fit); resize.observe(canvas.current!); fit();
     let animation = 0, last = performance.now(), time = 0;
@@ -47,7 +53,7 @@ export function TabletopGrid({ ids, collection, plan, playing, speed, onSelect }
       last = now; animation = requestAnimationFrame(tick);
     };
     animation = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(animation); resize.disconnect(); worker.terminate(); views.forEach(({ view }) => view.dispose()); renderer.dispose(); };
+    return () => { cancelAnimationFrame(animation); resize.disconnect(); workers.forEach(w => w.terminate()); views.forEach(({ view }) => view.dispose()); renderer.dispose(); };
   }, [ids.join(','), plan, retry]);
   return <div className="tt-grid" style={{ '--columns': Math.ceil(Math.sqrt(ids.length)) } as React.CSSProperties}>
     <canvas ref={canvas} aria-label="Tabletop simulation grid"/>

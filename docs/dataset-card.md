@@ -71,6 +71,7 @@ Use the Hugging Face Dataset Viewer's **configuration selector** to switch betwe
 - `hand-browser/`: 100 archived 20-second hand-only production episodes and their immutable manifest/checksums. These use a four-finger LEAP model and 28 Muse parameter anchors.
 - `hand-native/`: 290 archived hand-only native episodes across three pilots. Native/browser controllers and MuJoCo versions differ; do not pool them without checking provenance.
 - `subq/`: separately saved advisory visual reviews; no fabricated tabletop reviews.
+- SO-101 arm studies (`task: so101`, when packaged): seeded, not Muse-proposed. 16.9-second episodes, 508 frames at 30 Hz, listed in `tabletop/index.json` after the hand plan's IDs and planned in `tabletop/arm-scenarios.json`. `catalog.json` counts them separately (`arm_planned`, `arm_recorded`) under their own collection; in `tabletop/summary.jsonl`, `robot` is `so101-arm` and the `muse_*` fields are empty.
 
 ## Grip correction and validation
 
@@ -103,4 +104,4 @@ print(episode['metrics'])               # measured simulation output
 
 ## Privacy and license
 
-Exports include only allowlisted trajectories, structured model proposals, saved review outputs and public manifests. Credentials, admin tokens, `.env` files, worker logs and private configuration are excluded. The original robot geometry license is retained in `ROBOT_MODEL_LICENSE`; refer to it for geometry reuse. Dataset documentation and newly generated trajectory exports are CC BY 4.0.
+Exports include only allowlisted trajectories, structured model proposals, saved review outputs and public manifests. Credentials, admin tokens, `.env` files, worker logs and private configuration are excluded. The original hand geometry license (LEAP) is retained in `ROBOT_MODEL_LICENSE`. When SO-101 arm episodes are included, their mesh geometry comes from TheRobotStudio's SO-ARM100 model under Apache-2.0: see `SO101_MODEL_LICENSE` and the pinned revision in `SO101_MODEL_SOURCE.json`. Refer to these for geometry reuse. Dataset documentation and newly generated trajectory exports are CC BY 4.0.

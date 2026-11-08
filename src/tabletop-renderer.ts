@@ -33,17 +33,21 @@ export class TabletopRenderer {
     floor.rotation.set(0, 0, 0); floor.position.z = .08; floor.receiveShadow = true; this.scene.add(floor);
     this.camera.up.set(0, 0, 1);
     this.controls = new OrbitControls(this.camera, shared?.viewport ?? canvas);
-    this.controls.enableDamping = true; this.controls.minDistance = .5; this.controls.maxDistance = 2.6;
+    this.controls.enableDamping = true; this.controls.minDistance = .3; this.controls.maxDistance = 2.6;
     this.controls.maxPolarAngle = Math.PI / 2 - .06; this.controls.target.set(0, 0, .77);
     this.resetCamera();
     this.resize = new ResizeObserver(() => this.fit()); this.resize.observe(shared?.viewport ?? canvas); this.fit();
     if (!shared) this.draw();
   }
-  resetCamera = () => { this.camera.position.set(.95, -1.25, 1.65); this.controls.target.set(0, 0, .77); this.controls.update(); };
+  private close = false;
+  /** The SO-101 studies are small: start the camera closer to the arm. */
+  resetCamera = () => { if (this.close) { this.camera.position.set(.42, -.62, 1.08); this.controls.target.set(-.02, 0, .8); } else { this.camera.position.set(.95, -1.25, 1.65); this.controls.target.set(0, 0, .77); } this.controls.update(); };
   private fit() { const rect = (this.shared?.viewport ?? this.canvas).getBoundingClientRect(); if (!this.shared) this.renderer.setSize(rect.width, rect.height, false); this.camera.aspect = rect.width / Math.max(1, rect.height); this.camera.updateProjectionMatrix(); }
   private clear(group: THREE.Group) { group.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Line) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(m => m.dispose()); } }); group.clear(); }
   load(episode: TableEpisode) {
     this.clear(this.stage); this.clear(this.props);
+    const close = episode.scenario.task === 'so101';
+    if (close !== this.close) { this.close = close; this.resetCamera(); }
     this.objects = episode.geoms.map(g => {
       let geometry: THREE.BufferGeometry;
       if (g.mesh) { geometry = new THREE.BufferGeometry(); geometry.setAttribute('position', new THREE.Float32BufferAttribute(g.mesh.vertices, 3)); geometry.setIndex(g.mesh.faces); geometry.computeVertexNormals(); }
@@ -60,7 +64,7 @@ export class TabletopRenderer {
       const leg = new THREE.Mesh(new THREE.BoxGeometry(.025, .025, .6), new THREE.MeshStandardMaterial({ color: '#8b8c7f' }));
       leg.position.set(x, y, .385); this.props.add(leg);
     }
-    if (s.task !== 'pour') {
+    if (s.task !== 'pour' && s.task !== 'so101') {
       const ring = new THREE.Mesh(new THREE.RingGeometry(.049, .051, 64), new THREE.MeshBasicMaterial({ color: '#799374', side: THREE.DoubleSide }));
       ring.position.set(...s.goal, s.task === 'stack' ? .785 : .721); this.props.add(ring);
     }
