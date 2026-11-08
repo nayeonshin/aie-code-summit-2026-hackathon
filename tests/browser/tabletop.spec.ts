@@ -7,14 +7,14 @@ test('tabletop collection, navigation, real playback, and export', async ({ page
   await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Tabletop studies 125' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Grid', exact: true })).toBeVisible();
   await expect(page.locator('.tt-card')).toHaveCount(125);
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
   await expect(page.locator('[role=alert]')).toHaveCount(0);
   await expect.poll(async () => Number(await page.getByLabel('Tabletop playback position').inputValue())).toBeGreaterThan(1);
   await page.getByLabel('Pause tabletop playback').click();
   await page.getByLabel('Tabletop playback position').fill('150');
-  await expect(page.locator('.tt-scene-badge')).toContainText('Transport');
+  await expect(page.locator('.tt-scene-badge')).toHaveCount(0);
   const position = await page.getByLabel('Tabletop playback position').inputValue();
   await page.waitForTimeout(200);
   await expect(page.getByLabel('Tabletop playback position')).toHaveValue(position);
@@ -23,7 +23,9 @@ test('tabletop collection, navigation, real playback, and export', async ({ page
   await expect(page.locator('.tt-card')).toHaveCount(25);
   await page.getByLabel('Episode 76: Pour into receiving cup').click();
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
-  await expect(page.locator('.tt-inspector')).toContainText('36 / 36');
+  await page.getByRole('button', { name: 'Data & AI', exact: true }).click();
+  await expect(page.locator('.data-body')).toContainText('36 rigid particles');
+  await page.getByLabel('Close data explorer').click();
   await page.getByLabel('Tabletop playback position').fill('180');
   await page.screenshot({ path: 'test-results/tabletop-pour.png' });
   const downloadPromise = page.waitForEvent('download');
@@ -31,7 +33,7 @@ test('tabletop collection, navigation, real playback, and export', async ({ page
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('tabletop-076.json');
   await page.getByLabel('Next simulation').click();
-  await expect(page.locator('.tt-scene-top .tt-eyebrow')).toHaveText('STUDY 077 / 125');
+  await expect(page.getByLabel('Selected episode', { exact: true })).toHaveText('77');
   await page.getByLabel('Search simulations').fill('no such study');
   await expect(page.locator('.tt-empty')).toBeVisible();
   expect(errors).toEqual([]);
@@ -44,7 +46,7 @@ test('mobile simulation browser fits and closes after selection', async ({ page 
   await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
   await page.goto('/');
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
-  await page.getByRole('button', { name: 'Browse studies' }).click();
+  await page.getByRole('button', { name: 'Browse', exact: true }).click();
   await expect(page.getByLabel('Simulation library')).toBeVisible();
   await page.getByLabel('Episode 2: Pick & place · sphere').click();
   await expect(page.getByLabel('Simulation library')).toBeHidden();

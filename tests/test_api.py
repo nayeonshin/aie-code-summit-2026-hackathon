@@ -76,3 +76,22 @@ def test_saved_episode_replay(monkeypatch, tmp_path):
             for field in ('qpos', 'qvel', 'ctrl', 'contacts', 'actuator_force', 'external_force'):
                 assert frame[field] == row[field][index]
         assert client.get('/api/runs/fixture/episodes/2').status_code == 404
+
+def test_legacy_parquet_replay(monkeypatch, tmp_path):
+    import importlib
+    import pyarrow.parquet as pq
+    from backend.generate import generate
+    module = importlib.import_module('backend.app')
+    generate(tmp_path / 'legacy', count=1, workers=1, seconds=.2)
+    shard = tmp_path / 'legacy/shard-000000.parquet'
+    table = pq.read_table(shard).drop(['external_force'])
+    pq.write_table(table, shard)
+    row = table.to_pylist()[0]
+    monkeypatch.setattr(module, 'RUNS', tmp_path)
+    with TestClient(app) as client:
+        response = client.get('/api/runs/legacy/episodes/0')
+        assert response.status_code == 200
+        for index, frame in enumerate(response.json()['frames']):
+            assert frame['external_force'] is None
+            for field in ('qpos', 'qvel', 'ctrl', 'contacts', 'actuator_force'):
+                assert frame[field] == row[field][index]

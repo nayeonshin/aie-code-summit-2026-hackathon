@@ -3,6 +3,7 @@
 No keys, logs, .env files, private configuration or arbitrary data directories.
 """
 import hashlib
+import gzip
 import json
 import re
 from pathlib import Path
@@ -27,7 +28,40 @@ def write(path, value):
     path.write_text(json.dumps(value, indent=2), encoding='utf-8')
 
 
+def validate_tabletop(output):
+    index = json.loads((output / 'tabletop/index.json').read_text(encoding='utf-8'))
+    raw = (output / 'muse/scenarios.json').read_bytes()
+    scenarios = json.loads(raw)
+    plan_path = output / 'muse/tabletop-plan.json'
+    plan = json.loads(plan_path.read_text(encoding='utf-8')) if plan_path.exists() else None
+    if index.get('plan_fingerprint') and index['plan_fingerprint'] != hashlib.sha256(raw).hexdigest():
+        raise ValueError('Export plan fingerprint mismatch')
+    if index['recorded'] != len(index['studies']) or index['planned'] != len(scenarios):
+        raise ValueError('Export inventory count mismatch')
+    ids, files = set(), set()
+    for study in index['studies']:
+        ident, filename = study['id'], study['file']
+        if ident in ids or filename in files:
+            raise ValueError('Duplicate export ID or filename')
+        ids.add(ident)
+        files.add(filename)
+        if not isinstance(ident, int) or not 0 <= ident < len(scenarios) or filename != f'episode-{ident + 1:04d}.json.gz':
+            raise ValueError('Invalid export ID or filename')
+        scenario = {k: v for k, v in study.items() if k not in ('metrics', 'provenance', 'frames', 'file', 'bytes', 'sha256')}
+        if scenario.get('proposal') and (not plan or scenario['proposal']['planId'] != plan['id'] or scenario['proposal']['model'] != plan['model']):
+            raise ValueError('Trajectory proposal differs from published plan')
+        with gzip.open(output / 'tabletop' / filename, 'rt', encoding='utf-8') as stream:
+            episode = json.load(stream)
+        if scenario != scenarios[ident] or episode['scenario'] != scenario:
+            raise ValueError('Trajectory/index/plan scenario mismatch')
+        if episode['metrics'] != study['metrics'] or episode['provenance'] != study['provenance'] or len(episode['frames']) != study['frames']:
+            raise ValueError('Trajectory/index measurements mismatch')
+    return index
+
+
 def main():
+    # Validate all tabletop attribution before modifying any publication files.
+    tabletop = validate_tabletop(OUTPUT)
     OUTPUT.mkdir(parents=True, exist_ok=True)
     collections = []
     for name in ('objectives100-20s', 'objectives100', 'pilot90'):
@@ -65,7 +99,6 @@ def main():
         write(OUTPUT / 'subq' / file.name, review)
         reviews.append(review)
     plan = json.loads((OUTPUT / 'muse/tabletop-plan.json').read_text(encoding='utf-8'))
-    tabletop = json.loads((OUTPUT / 'tabletop/index.json').read_text(encoding='utf-8'))
     if tabletop['recorded'] != len(tabletop['studies']):
         raise ValueError('Recorded tabletop count does not match the exported inventory')
     for study in tabletop['studies']:

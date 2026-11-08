@@ -3,17 +3,27 @@ import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import loadMujoco from '@mujoco/mujoco';
 import { build } from 'esbuild';
+import { fingerprint, validateIndex, validatePartial } from './tabletop-export.mjs';
 
 await build({ entryPoints: ['src/tabletop-physics.ts', 'src/tabletop-scenarios.ts'], bundle: true, platform: 'node', format: 'esm', outdir: 'test-results/tabletop', write: true });
 const { simulateTabletop } = await import('../test-results/tabletop/tabletop-physics.js');
 const { scenarios, createCollection, durationOf, sampleHz } = await import('../test-results/tabletop/tabletop-scenarios.js');
 const planArg = process.argv.find(arg => arg.startsWith('--plan='));
-const collection = planArg ? createCollection(JSON.parse(readFileSync(planArg.slice(7), 'utf8'))) : scenarios;
+const plan = planArg ? JSON.parse(readFileSync(planArg.slice(7), 'utf8')) : null;
+const collection = plan ? createCollection(plan) : scenarios;
 const exporting = process.argv.includes('--export');
 const tasksArg = process.argv.find(arg => arg.startsWith('--tasks='));
 const tasks = tasksArg?.slice(8).split(',');
-const summaries = exporting && tasks && existsSync('data/publish/tabletop/index.json') ? JSON.parse(readFileSync('data/publish/tabletop/index.json', 'utf8')).studies.filter(s => !tasks.includes(s.task)) : [];
-if (exporting) mkdirSync('data/publish/tabletop', { recursive: true });
+const exportArg = process.argv.find(arg => arg.startsWith('--output='));
+const output = exportArg?.slice(9) ?? 'data/publish';
+let summaries = [];
+if (exporting && tasks && existsSync(`${output}/tabletop/index.json`)) {
+  const index = JSON.parse(readFileSync(`${output}/tabletop/index.json`, 'utf8'));
+  const saved = JSON.parse(readFileSync(`${output}/muse/scenarios.json`, 'utf8'));
+  validatePartial(index, saved, collection); // Must precede every trajectory write.
+  summaries = index.studies.filter(s => !tasks.includes(s.task));
+}
+if (exporting) { mkdirSync(`${output}/tabletop`, { recursive: true }); mkdirSync(`${output}/muse`, { recursive: true }); }
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async url => new Response(readFileSync('public' + url));
 const mj = await loadMujoco();
@@ -50,8 +60,8 @@ try {
       // high-acceleration Muse variants, while rejecting the old ~10 cm offset.
       assert.ok(Math.hypot(...frame.objectCenter.map((p, i) => p - frame.graspCenter[i])) < .01, `Episode ${id}: object-local grip offset drifted`);
     }
-    if (exporting) { const file = `episode-${String(id + 1).padStart(4, '0')}.json.gz`; writeFileSync('data/publish/tabletop/' + file, gzipSync(JSON.stringify(episode))); summaries.push({ ...episode.scenario, metrics: episode.metrics, provenance: episode.provenance, frames: episode.frames.length, file }); }
+    if (exporting) { const file = `episode-${String(id + 1).padStart(4, '0')}.json.gz`; writeFileSync(`${output}/tabletop/` + file, gzipSync(JSON.stringify(episode))); summaries.push({ ...episode.scenario, metrics: episode.metrics, provenance: episode.provenance, frames: episode.frames.length, file }); }
     console.log(id + 1, collection[id].task, collection[id].shape, JSON.stringify(episode.metrics), Math.round(performance.now() - started) + 'ms');
   }
-  if (exporting) { summaries.sort((a, b) => a.id - b.id); writeFileSync('data/publish/tabletop/index.json', JSON.stringify({ planned: collection.length, recorded: summaries.length, studies: summaries }, null, 2)); writeFileSync('data/publish/muse/scenarios.json', JSON.stringify(collection, null, 2)); }
+  if (exporting) { summaries.sort((a, b) => a.id - b.id); const index = { plan_fingerprint: fingerprint(collection), planned: collection.length, recorded: summaries.length, studies: summaries }; validateIndex(index, collection); writeFileSync(`${output}/tabletop/index.json`, JSON.stringify(index, null, 2)); writeFileSync(`${output}/muse/scenarios.json`, JSON.stringify(collection, null, 2)); if (plan) writeFileSync(`${output}/muse/tabletop-plan.json`, JSON.stringify(plan, null, 2)); }
 } finally { globalThis.fetch = originalFetch; }

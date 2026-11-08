@@ -21,7 +21,13 @@
 
 PR #2 is stacked on PR #1. Resolve/re-review the recovery and startup findings, merge #2 into the first app branch, then merge #1 into `main`. **Do not start a credit-exhausting generation job during review.** AI calls are explicit authenticated actions, never triggered by browsing the app. The coordinator's reservation is a conservative local cap, not the actual Meta/SubQ billing balance.
 
-### Data & AI explorer
+### Minimal simulation views
+
+**Single** keeps orbit, playback, scrubbing and export controls. **Grid** replaces the old Hand studies tab with 4, 9, 16 or 25 tabletop simulations at once, task filtering and paging through the collection. Click a tile's number to focus it. The grid uses one shared WebGL canvas, one sequential physics worker and packed 10 Hz transforms (full single-episode exports remain 30 Hz). The 25-view cap bounds memory/GPU usage; it does not load all 1,000 scenarios at once. Legacy hand replay remains available in **Data & AI → Legacy recordings** or `/#hands`.
+
+Main-screen introductions, readiness labels, study descriptions, provenance and inspector paragraphs are removed. Model limitations, measured outcomes, selected-plan attribution and the published Hugging Face inventory remain in the data panel. The tabletop paid-generation button is unavailable during release review.
+
+### Provenance and inventory
 
 Open **Data & AI** in either workspace to distinguish **MuJoCo trajectories**, **Muse parameter proposals/rationale**, and **SubQ visual reviews**. The panel includes a Hugging Face button, collection files, model/plan attribution and raw saved review outputs. Unreviewed tabletop episodes are labeled **SubQ not reviewed**; existing hand-only reviews are not fabricated into tabletop labels.
 
@@ -47,6 +53,8 @@ hf upload MedSalim/labbit-robotic-manipulation data/publish . --repo-type datase
 ```
 
 See [`docs/dataset-card.md`](docs/dataset-card.md) for formats, provenance, privacy and modeling limitations. `catalog.json` on Hugging Face is the published inventory; a new plan does not silently add completed recordings or SubQ labels.
+
+Task-filtered exports (`--tasks=pour`) must match the existing scenario fingerprint before any trajectory writes. For a different plan, use a new directory with `--output=data/another-export`. Publication verifies unique study IDs/filenames and trajectory↔index↔scenario agreement before changing publication files. `node scripts/check_tabletop_export.mjs` and `tests/test_tabletop_publication.py` cover these guards.
 
 ### Tabletop workspace (new default)
 

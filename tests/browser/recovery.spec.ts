@@ -22,7 +22,7 @@ test('data explorer separates Muse, physics and SubQ with a Hugging Face link', 
   await page.goto('/');
   await page.getByRole('button', { name: 'Data & AI' }).click();
   await expect(page.getByRole('dialog', { name: 'Data and AI provenance' })).toBeVisible();
-  await expect(page.locator('.data-note')).toContainText('1,000 Muse-derived scenarios');
+  await expect(page.locator('.data-note').first()).toContainText('1,000 Muse-derived scenarios');
   await expect(page.getByRole('link', { name: 'Open Hugging Face dataset' })).toHaveAttribute('href', 'https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation');
   await page.getByRole('tab', { name: 'Muse proposals' }).click();
   await expect(page.locator('.data-body')).toContainText('fixture-plan');
@@ -40,10 +40,15 @@ test('published Muse collection supports 1,000 studies and keyboard navigation b
   await page.goto('/');
   await expect(page.locator('.tt-card')).toHaveCount(1025);
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 60000 });
-  await expect(page.locator('.tt-source-line')).toContainText('Muse variant 1');
+  await expect(page.locator('.tt-source-line')).toHaveCount(0);
   await page.locator('.tt-card').nth(125).click();
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 60000 });
   await page.locator('.tt-viewport canvas').click();
   await page.keyboard.press('ArrowRight');
-  await expect(page.locator('.tt-scene-top .tt-eyebrow')).toHaveText('STUDY 127 / 1,025');
+  await expect(page.getByLabel('Selected episode', { exact: true })).toHaveText('127');
+  await page.getByRole('button', { name: 'Data & AI', exact: true }).click();
+  await page.getByRole('tab', { name: 'Muse proposals' }).click();
+  await expect(page.locator('.data-selected')).toContainText('fixture-muse-1000');
+  await expect(page.locator('.data-selected')).not.toContainText('3d1546db');
+  await expect(page.locator('.data-published')).toContainText('3d1546db');
 });

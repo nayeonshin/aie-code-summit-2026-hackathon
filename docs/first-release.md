@@ -25,6 +25,14 @@ No review has been dismissed and no merge has been performed automatically. Do n
 | Rejected asset promise survives Retry | Clear cached promise on rejection | `node scripts/check_tabletop_retry.mjs` |
 | Fresh checkout missing public assets | `predev` prepares model assets automatically | `npm run test:first-launch`, isolated checkout + real Chrome |
 | Hand grabs from its back | Palm-facing wrist, MuJoCo fingertip IK, object-local side grip for cups | Baseline/Muse numerical alignment checks + Chrome/WebKit screenshots |
+| Legacy Parquet lacks optional forces | Replay returns null for unrecorded optional fields; preserves existing telemetry | Native legacy-schema test + WASM legacy replay |
+| Partial export mixes plans | Scenario fingerprint agreement before partial writes; unique IDs/files and trajectory/index agreement before publication | `scripts/check_tabletop_export.mjs`, `tests/test_tabletop_publication.py` |
+| Live plan attributed to published plan | Selected section uses episode/active plan; catalog is labeled separately | Different-live/published-plan Chrome regression |
+| Windows standalone launch test | Junctions, npm CLI through Node, platform-specific tree cleanup, setup inside cleanup scope | Local real Chrome first launch passed; Windows re-verification requested |
+
+## Minimal multi-view workspace
+
+Grid replaces the primary Hand studies tab with configurable 4/9/16/25 real tabletop playbacks, one shared WebGL canvas, packed 10 Hz transforms, task filters and paging. Full 30 Hz episodes and legacy hand recordings remain separately accessible. Descriptions, provenance, limitations and measurements live in the data panel, not on the main canvas. Desktop 25-view and mobile-layout regressions are checked in. No new paid inference was used.
 
 ## Data release scope
 
