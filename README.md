@@ -1,21 +1,40 @@
 <p align="center">
-  <img src="public/labbit.svg" width="96" height="96" alt="Labbit: a minimal rabbit head and ear in profile" />
+  <img src="docs/media/labbit-logo.svg" width="96" height="96" alt="Labbit logo" />
 </p>
 
 <h1 align="center">Labbit</h1>
 
-<p align="center"><em>A little rabbit. A serious robotics lab.</em></p>
+<p align="center"><em>A simulation-first lab for robot decisions.</em></p>
 
 <p align="center">
   <a href="https://hand-studio.hidden-pond-5e6a.workers.dev">Try the live lab</a> ·
-  <a href="https://hand-studio.hidden-pond-5e6a.workers.dev/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/manifest.json">Explore the generated dataset</a>
+  <a href="https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation">Explore the generated dataset</a>
 </p>
 
-**Labbit** is a play on *lab* and *rabbit*: a minimal live robotic-hand workbench and a reproducible simulation dataset factory. The goal is **100,000 useful, diverse 20-second episodes**, not 100,000 copies of the same gesture. The original profile-view rabbit SVG in [`public/labbit.svg`](public/labbit.svg) is shared by the README, app mark and favicon.
+**Labbit** lets robots make mistakes where nothing breaks. Before a robot touches fragile equipment or valuable samples, it should be able to test its options in simulation, compare the evidence and build confidence in its next move. **Think. Test. Compare. Then act.**
+
+Today, Labbit is an inspectable simulation workbench and dataset factory. **Meta Muse Wonder** proposes bounded scenario variations, **MuJoCo** computes physical trajectories and measured outcomes, and **SubQ** provides separately attributed advisory visual reviews. Comparing decisions before real-world execution is our vision—not a claim of validated autonomous robot safety.
 
 **Live deployment:** https://hand-studio.hidden-pond-5e6a.workers.dev
 
 **Hugging Face dataset:** https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation
+
+### What data do we generate?
+
+- **Tabletop manipulation:** pick-and-place, contact pushing, stacking and cup-to-cup particle pouring. Each 12-second episode stores **361 frames at 30 Hz**, hand/object transforms, contact counts, grip telemetry, scenario parameters and measured outcomes such as target distance or retained particles.
+- **Reproducible variation:** shape, size, mass, friction, placement and motion vary within validated bounds. Saved plans and trajectory provenance keep AI proposals distinct from simulated evidence.
+- **Failures included:** a push that misses its target remains a useful recorded attempt. Numerical validity is not task success; an AI review is not a safety certificate. Grasps are assisted, and pouring uses 36 rigid particles rather than continuum water.
+- **Archived hand motion:** separate 5- and 20-second collections retain joint positions, velocities, actuator commands and forces. Tabletop exports are not a complete low-level control-policy dataset and should not be pooled with these older recordings without checking provenance.
+
+### Published data and generation capacity
+
+The [Hugging Face catalog](https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation/blob/main/catalog.json), checked on **7 November 2026**, lists **100 published tabletop episodes + 390 archived hand-only episodes**. The tabletop plan contains **1,000 scenarios**; planned scenarios are not completed recordings.
+
+**Local 1,000-episode campaign — snapshot at 17:03 PST on 7 November 2026:** **372 / 1,000 completed (37.2%)**, approximately **4.01 GB** saved, with **no validation errors logged**. Generation was continuing at that snapshot, with roughly **37 minutes remaining** based on measured episode times. This is a dated local progress report, not a live counter or an additional published dataset; it overlaps the existing pilot and must not be added to the published count.
+
+At the observed average of **~3.6 seconds per tabletop episode**, 1,000 episodes take roughly **one hour** and **10.8 GB** in standalone JSON. A linear projection to 100,000 is roughly **100 hours and 1.1 TB**, not a completed run or a sustained-throughput guarantee. The published 100-episode compact pilot uses **132.7 MB**, about **88% less** than its 1,077.1 MB standalone equivalent, by sharing mesh geometry while retaining every recorded frame. Task mix, hardware, export overhead and uploads affect capacity; images and paid AI reviews are excluded. The faster native hand-only benchmark below is a different workload.
+
+**Saving locally is not backing up remotely.** This campaign does not automatically upload completed episodes to Hugging Face or Cloudflare R2. Files survive a stopped generator but not disk loss; the final index is written on completion. Publication is a separate explicit step. Wrangler deploys the viewer; R2 stores cloud trajectories. This README update does not publish data or deploy the app.
 
 ### First-release review gate
 
@@ -101,7 +120,7 @@ The Cloudflare Worker URL and R2 bucket retain their original `hand-studio` infr
 
 ## Data generated so far
 
-Verified inventory, **7 November 2026**. These are completed pilot runs, not a completed 100k dataset. Tests, temporary fixtures and local Wrangler smoke runs are excluded.
+**Archived hand-only inventory, 7 November 2026.** The table below covers the older hand-motion pilots only; the published tabletop collection and in-progress campaign are described above. These are completed pilot runs, not a completed 100k dataset. Tests, temporary fixtures and local Wrangler smoke runs are excluded.
 
 | Run | Location | Episodes | Duration | Frames | Shards | Compressed size |
 |---|---|---:|---:|---:|---:|---:|
