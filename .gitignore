@@ -16,3 +16,6 @@ models/leap_hand/right_hand.xml
 .wrangler/
 public/model/
 public/data/
+models/so101/assets/
+models/so101/so101_new_calib.xml
+public/so101/

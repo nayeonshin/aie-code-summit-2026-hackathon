@@ -33,13 +33,14 @@ export class TabletopRenderer {
     floor.rotation.set(0, 0, 0); floor.position.z = .08; floor.receiveShadow = true; this.scene.add(floor);
     this.camera.up.set(0, 0, 1);
     this.controls = new OrbitControls(this.camera, canvas);
-    this.controls.enableDamping = true; this.controls.minDistance = .5; this.controls.maxDistance = 2.6;
+    this.controls.enableDamping = true; this.controls.minDistance = .3; this.controls.maxDistance = 2.6;
     this.controls.maxPolarAngle = Math.PI / 2 - .06; this.controls.target.set(0, 0, .77);
     this.resetCamera();
     this.resize = new ResizeObserver(() => this.fit()); this.resize.observe(canvas); this.fit();
     this.draw();
   }
-  resetCamera = () => { this.camera.position.set(.95, -1.25, 1.65); this.controls.target.set(0, 0, .77); this.controls.update(); };
+  private close = false;
+  resetCamera = () => { if (this.close) { this.camera.position.set(.42, -.62, 1.08); this.controls.target.set(-.02, 0, .8); } else { this.camera.position.set(.95, -1.25, 1.65); this.controls.target.set(0, 0, .77); } this.controls.update(); };
   private fit() { const rect = this.canvas.getBoundingClientRect(); this.renderer.setSize(rect.width, rect.height, false); this.camera.aspect = rect.width / Math.max(1, rect.height); this.camera.updateProjectionMatrix(); }
   private clear(group: THREE.Group) { group.traverse(object => { if (object instanceof THREE.Mesh) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(m => m.dispose()); } }); group.clear(); }
   load(episode: TableEpisode) {
@@ -53,6 +54,8 @@ export class TabletopRenderer {
       const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: g.color, roughness: g.type === 'sphere' ? .3 : .65, metalness: g.mesh ? .22 : .02 }));
       mesh.castShadow = true; mesh.receiveShadow = true; this.stage.add(mesh); return mesh;
     });
+    const close = episode.scenario.task === 'so101';
+    if (close !== this.close) { this.close = close; this.resetCamera(); }
     this.decorate(episode.scenario); this.frame(episode.frames[0]);
   }
   private decorate(s: Scenario) {
@@ -60,7 +63,7 @@ export class TabletopRenderer {
       const leg = new THREE.Mesh(new THREE.BoxGeometry(.025, .025, .6), new THREE.MeshStandardMaterial({ color: '#8b8c7f' }));
       leg.position.set(x, y, .385); this.props.add(leg);
     }
-    if (s.task !== 'pour') {
+    if (s.task !== 'pour' && s.task !== 'so101') {
       const ring = new THREE.Mesh(new THREE.RingGeometry(.049, .051, 64), new THREE.MeshBasicMaterial({ color: '#799374', side: THREE.DoubleSide }));
       ring.position.set(...s.goal, s.task === 'stack' ? .785 : .721); this.props.add(ring);
     }

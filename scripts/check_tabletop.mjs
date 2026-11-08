@@ -6,7 +6,7 @@ import { build } from 'esbuild';
 
 await build({ entryPoints: ['src/tabletop-physics.ts', 'src/tabletop-scenarios.ts'], bundle: true, platform: 'node', format: 'esm', outdir: 'test-results/tabletop', write: true });
 const { simulateTabletop } = await import('../test-results/tabletop/tabletop-physics.js');
-const { scenarios, createCollection } = await import('../test-results/tabletop/tabletop-scenarios.js');
+const { scenarios, createCollection, durationOf, sampleHz } = await import('../test-results/tabletop/tabletop-scenarios.js');
 const planArg = process.argv.find(arg => arg.startsWith('--plan='));
 const collection = planArg ? createCollection(JSON.parse(readFileSync(planArg.slice(7), 'utf8'))) : scenarios;
 const exporting = process.argv.includes('--export');
@@ -18,21 +18,31 @@ const originalFetch = globalThis.fetch;
 globalThis.fetch = async url => new Response(readFileSync('public' + url));
 const mj = await loadMujoco();
 try {
-  assert.equal(scenarios.length, 100);
-  const selectedIds = process.argv.includes('--all') ? collection.map(s => s.id) : exporting ? collection.slice(0, 100).map(s => s.id) : [0, 1, 2, 25, 26, 27, 50, 51, 52, 75];
+  assert.equal(scenarios.length, 125);
+  assert.equal(scenarios.filter(s => s.task === 'so101').length, 25);
+  const selectedIds = process.argv.includes('--all') ? collection.map(s => s.id) : exporting ? collection.slice(0, 100).map(s => s.id) : [0, 1, 2, 25, 26, 27, 50, 51, 52, 75, 100, 112];
   const ids = selectedIds.filter(id => !tasks || tasks.includes(collection[id].task));
   for (const id of ids) {
     const started = performance.now();
     const episode = await simulateTabletop(mj, collection[id]);
-    assert.equal(episode.frames.length, 361);
+    const task = collection[id].task;
+    assert.equal(episode.frames.length, Math.round(durationOf(task) * sampleHz) + 1);
     assert.equal(episode.metrics.finite, true, `Episode ${id} has non-finite positions`);
-    assert.equal(episode.provenance.handActuators, 20);
+    assert.equal(episode.provenance.handActuators, task === 'so101' ? 6 : 20);
     assert.ok(episode.metrics.contacts > 0);
     assert.ok(episode.frames.every(f => f.positions.length === episode.geoms.length));
     assert.ok(episode.frames.every(f => f.positions.flat().every(n => Math.abs(n) < 10)), `Episode ${id} unstable`);
     const first = episode.frames[0].object, last = episode.frames.at(-1).object;
-    assert.ok(Math.hypot(...last.map((n, i) => n - first[i])) > .03 || collection[id].task === 'pour', `Episode ${id} object did not move`);
-    if (collection[id].task === 'pour') assert.ok(episode.metrics.retainedParticles > 0, `Episode ${id} did not transfer particles`);
+    assert.ok(Math.hypot(...last.map((n, i) => n - first[i])) > .03 || task === 'pour' || task === 'so101', `Episode ${id} object did not move`);
+    if (task === 'pour') assert.ok(episode.metrics.retainedParticles > 0, `Episode ${id} did not transfer particles`);
+    if (task === 'so101') {
+      assert.ok(episode.metrics.retainedParticles >= 30, `Episode ${id}: SO-101 poured only ${episode.metrics.retainedParticles}/36`);
+      assert.ok(episode.metrics.cupsUpright, `Episode ${id}: a cup fell over`);
+      assert.ok(episode.metrics.goalDistance < .01, `Episode ${id}: cup not put back`);
+      for (const frame of episode.frames.filter(f => f.holding)) assert.ok(Math.hypot(...frame.objectCenter.map((p, i) => p - frame.graspCenter[i])) < .01, `Episode ${id}: cup slipped in the jaws`);
+      console.log(id + 1, task, JSON.stringify(episode.metrics), Math.round(performance.now() - started) + 'ms');
+      continue;
+    }
     if (collection[id].task !== 'push') for (const frame of episode.frames.filter(f => f.holding && f.time > 2 && f.time < 7)) {
       const towardObject = frame.objectCenter.map((p, i) => p - frame.palm[i]);
       assert.ok(towardObject.reduce((sum, p, i) => sum + p * frame.palmNormal[i], 0) > .08, `Episode ${id}: back of hand faces the object`);

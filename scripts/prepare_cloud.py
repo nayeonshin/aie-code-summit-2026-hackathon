@@ -20,6 +20,18 @@ def main():
             public_data = ROOT / 'public/data'
             public_data.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(snapshot, public_data / ('catalog.json' if name == 'data-catalog.json' else name))
-    print(f'Prepared {len(files)} licensed model files for deployment.')
+    # The SO-101 arm (Apache-2.0), for the arm pour studies.
+    so101 = ROOT / 'models/so101'
+    if not (so101 / 'so101_new_calib.xml').exists():
+        from scripts.fetch_so101 import main as fetch_so101
+        fetch_so101()
+    arm_out = ROOT / 'public/so101'
+    arm_files = ['so101_new_calib.xml', 'LICENSE', 'source.json'] + ['assets/' + p.name for p in sorted((so101 / 'assets').glob('*.stl'))]
+    for name in arm_files:
+        target = arm_out / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(so101 / name, target)
+    (arm_out / 'manifest.json').write_text(json.dumps({'files': arm_files, 'source': json.loads((so101 / 'source.json').read_text())}, indent=2))
+    print(f'Prepared {len(files)} licensed hand files and {len(arm_files)} SO-101 files for deployment.')
 
 if __name__ == '__main__': main()

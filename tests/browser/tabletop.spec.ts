@@ -7,8 +7,8 @@ test('tabletop collection, navigation, real playback, and export', async ({ page
   await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Tabletop studies 100' })).toBeVisible();
-  await expect(page.locator('.tt-card')).toHaveCount(100);
+  await expect(page.getByRole('heading', { name: 'Tabletop studies 125' })).toBeVisible();
+  await expect(page.locator('.tt-card')).toHaveCount(125);
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
   await expect(page.locator('[role=alert]')).toHaveCount(0);
   await expect.poll(async () => Number(await page.getByLabel('Tabletop playback position').inputValue())).toBeGreaterThan(1);
@@ -31,7 +31,7 @@ test('tabletop collection, navigation, real playback, and export', async ({ page
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('tabletop-076.json');
   await page.getByLabel('Next simulation').click();
-  await expect(page.locator('.tt-scene-top .tt-eyebrow')).toHaveText('STUDY 077 / 100');
+  await expect(page.locator('.tt-scene-top .tt-eyebrow')).toHaveText('STUDY 077 / 125');
   await page.getByLabel('Search simulations').fill('no such study');
   await expect(page.locator('.tt-empty')).toBeVisible();
   expect(errors).toEqual([]);
