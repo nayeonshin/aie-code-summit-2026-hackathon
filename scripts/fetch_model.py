@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1] / 'models' / 'leap_hand'
 
 def fetch(url):
-    with urlopen(Request(url, headers={'User-Agent': 'hand-studio'}), timeout=60) as r:
+    with urlopen(Request(url, headers={'User-Agent': 'Labbit (https://labbit.science)'}), timeout=60) as r:
         return r.read()
 
 def main():

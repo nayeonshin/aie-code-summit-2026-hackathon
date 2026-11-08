@@ -50,7 +50,7 @@ configs:
 
 # Labbit: trajectories, Muse proposals, and SubQ visual reviews
 
-Live explorer: https://hand-studio.hidden-pond-5e6a.workers.dev
+Live explorer: https://labbit.science
 
 Source: https://github.com/nayeonshin/aie-code-summit-2026-hackathon
 

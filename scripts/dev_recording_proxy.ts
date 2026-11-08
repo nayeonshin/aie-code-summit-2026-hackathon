@@ -2,7 +2,7 @@ import type { Plugin } from 'vite';
 import inventory from '../config/tabletop-recordings.json';
 
 // Never copy localhost headers to the deployed Worker (including custom tokens).
-export function publicRecordingProxy(target = 'https://hand-studio.hidden-pond-5e6a.workers.dev'): Plugin {
+export function publicRecordingProxy(target = 'https://labbit.science'): Plugin {
   const prefix = `/api/tabletop/recordings/${inventory.revision}/`;
   const paths = new Set([...inventory.episodes, ...Object.values(inventory.meshes)].map(entry => prefix + entry.file));
   return { name: 'public-recording-read', configureServer(server) {
