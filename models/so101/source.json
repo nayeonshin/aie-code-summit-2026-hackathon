@@ -1,0 +1,6 @@
+{
+  "repository": "TheRobotStudio/SO-ARM100",
+  "revision": "a758567c3978dfeefe282ede0500085a48fe8f78",
+  "model": "Simulation/SO101/so101_new_calib.xml",
+  "license": "Apache-2.0"
+}

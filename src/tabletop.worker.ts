@@ -1,8 +1,6 @@
 import { WasmEngine } from './wasm-engine';
 import { simulateTabletop } from './tabletop-physics';
-import { scenarios, createCollection } from './tabletop-scenarios';
-import { TabletopRecordings } from './tabletop-recordings';
-import { withAbort } from './asset-fetch';
+import { scenarios, createCollection, withArm } from './tabletop-scenarios';
 
 let engine: Promise<WasmEngine> | undefined;
 let initialized = false;
@@ -22,7 +20,7 @@ async function episodeFor(id: number, signal: AbortSignal) {
 let pending: number | null = null;
 let gridQueue: number[] = [];
 let working = false;
-let collection = scenarios;
+let collection = withArm(scenarios);
 let revision = 0;
 let active: AbortController | undefined;
 function supersede() { revision++; active?.abort(); pending = null; gridQueue = []; }
@@ -58,9 +56,9 @@ async function drain() {
 }
 self.onmessage = async event => {
   const { type, id, plan, ids } = event.data;
-  if (type === 'grid' && Array.isArray(ids)) { supersede(); gridQueue = ids.filter(id => Number.isInteger(id) && id >= 0 && id < collection.length).slice(0, 25); void drain(); }
-  if (type === 'collection') { try { collection = createCollection(plan); supersede(); cache.clear(); } catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); } }
-  if (type === 'select' && Number.isInteger(id) && id >= 0 && id < collection.length) { supersede(); pending = id; void drain(); }
+  if (type === 'grid' && Array.isArray(ids)) { revision++; gridQueue = ids.filter(id => Number.isInteger(id) && id >= 0 && id < collection.length).slice(0, 25); void drain(); }
+  if (type === 'collection') { try { collection = withArm(createCollection(plan)); revision++; cache.clear(); } catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); } }
+  if (type === 'select' && Number.isInteger(id) && id >= 0 && id < collection.length) { pending = id; void drain(); }
   if (type === 'init') {
     try { recordings = await TabletopRecordings.open(); initialized = true; self.postMessage({ type: 'ready' }); void drain(); }
     catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); }
