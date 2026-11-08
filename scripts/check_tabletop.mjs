@@ -34,10 +34,10 @@ try {
   assert.equal(scenarios.length, 100);
   assert.equal(arm.length, 25);
   assert.ok(base.every(s => s.task !== 'so101'));
-  // Filter by task before the default export takes its first 100 hand studies, so
-  // --tasks=so101 --export records the arm studies.
-  const wanted = collection.filter(s => !tasks || tasks.includes(s.task));
-  const selectedIds = process.argv.includes('--all') ? wanted.map(s => s.id) : exporting ? [...wanted.filter(s => s.task !== 'so101').slice(0, 100), ...wanted.filter(s => s.task === 'so101')].map(s => s.id) : [0, 1, 2, 25, 26, 27, 50, 51, 52, 75, base.length, base.length + 12];
+  // The default export keeps the hand pilot's scope: the plan's first 100 studies, then the
+  // task filter. Arm studies are added only with --all or when --tasks names so101.
+  const armIds = arm.map(s => s.id);
+  const selectedIds = process.argv.includes('--all') ? collection.map(s => s.id) : exporting ? [...base.slice(0, 100).map(s => s.id), ...(tasks?.includes('so101') ? armIds : [])] : [0, 1, 2, 25, 26, 27, 50, 51, 52, 75, base.length, base.length + 12];
   const ids = selectedIds.filter(id => !tasks || tasks.includes(collection[id].task));
   for (const id of ids) {
     const started = performance.now();
