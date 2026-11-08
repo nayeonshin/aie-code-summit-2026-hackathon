@@ -268,7 +268,7 @@ export async function simulateSo101Pour(mj: MainModule, s: Scenario): Promise<Ta
     for (let i = 0; i < 6; i++) { d.qpos[i] = home[i]; d.ctrl[i] = home[i]; }
     d.qpos[GRIP] = d.ctrl[GRIP] = .6;
     mj.mj_forward(m, d);
-    const frames: TableFrame[] = []; let contacts = 0, tracking = 0, welded = false;
+    const frames: TableFrame[] = []; let contacts = 0, tracking = 0, wristTracking = 0, achievedTilt = 0, welded = false;
     const relPose = () => {
       // the cup's pose in the gripper's frame: the weld then holds it where the jaws are
       const R1: number[] = d.xmat.slice(gripperBody * 9, gripperBody * 9 + 9), p1 = d.xpos.slice(gripperBody * 3, gripperBody * 3 + 3), p2 = d.xpos.slice(sourceBody * 3, sourceBody * 3 + 3);
@@ -289,7 +289,10 @@ export async function simulateSo101Pour(mj: MainModule, s: Scenario): Promise<Ta
         mj.mj_step(m, d); contacts = Math.max(contacts, d.ncon);
       }
       mj.mj_forward(m, d);
-      tracking = Math.max(tracking, ...ARM.map(j => Math.abs(d.qpos[j] - qs[k][j])));
+      // measured, not commanded: the four positioning joints and the wrist roll that pours
+      tracking = Math.max(tracking, ...[...ARM, ROLL].map(j => Math.abs(d.qpos[j] - qs[k][j])));
+      wristTracking = Math.max(wristTracking, Math.abs(d.qpos[ROLL] - qs[k][ROLL]));
+      achievedTilt = Math.max(achievedTilt, ROLL0 - d.qpos[ROLL]);
       const R = d.xmat.slice(gripperBody * 9, gripperBody * 9 + 9), palm = Array.from(d.xpos.slice(gripperBody * 3, gripperBody * 3 + 3)) as number[];
       const S = d.site_xmat.slice(site * 9, site * 9 + 9), tip = d.site_xpos.slice(site * 3, site * 3 + 3);
       const object = Array.from(d.xpos.slice(sourceBody * 3, sourceBody * 3 + 3)) as number[], oR = d.xmat.slice(sourceBody * 9, sourceBody * 9 + 9);
@@ -308,7 +311,7 @@ export async function simulateSo101Pour(mj: MainModule, s: Scenario): Promise<Ta
     const sourceUp = d.xmat[sourceBody * 9 + 8], receiverUp = d.xmat[receiverBody * 9 + 8];
     return { scenario: s, geoms, frames,
       metrics: { finite, contacts, goalDistance: Math.hypot(last.object[0] - s.start[0], last.object[1] - s.start[1]), retainedParticles: retained, totalParticles: beads, sourceParticles: source, spilledParticles: beads - retained - source,
-        cupsUpright: sourceUp > .95 && receiverUp > .95, trackingError: tracking, tilt: arm.tilt * 180 / Math.PI, graspPitch: pitch * 180 / Math.PI },
+        cupsUpright: sourceUp > .95 && receiverUp > .95, trackingError: tracking, wristTrackingError: wristTracking, commandedTilt: arm.tilt * 180 / Math.PI, achievedTilt: achievedTilt * 180 / Math.PI, graspPitch: pitch * 180 / Math.PI },
       provenance: { runtime: 'MuJoCo 4 / browser WASM', controller: 'RAX rax_subq.pour sequence (side grasp, carry, wrist-roll pour, put back); DLS inverse kinematics on the SO-101 MJCF; STS3215 position actuators; weld-assisted hold', fluid: '36 discrete rigid particles; not continuum water', timestep: .002,
         hand: 'SO-101 arm, TheRobotStudio/SO-ARM100 so101_new_calib.xml (Apache-2.0); arm geometry non-colliding, as in RAX\'s MuJoCo sim', handActuators: m.nu } };
   } finally { planner?.dispose(); data?.delete(); model?.delete(); vfs.delete(); }

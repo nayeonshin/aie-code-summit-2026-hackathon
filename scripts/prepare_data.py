@@ -23,6 +23,9 @@ def download(url):
     return subprocess.check_output(['curl', '--fail', '--retry', '3', '--max-time', '180', '-sS', url])
 
 
+FRAMES = {'so101': 508}
+
+
 def write(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2), encoding='utf-8')
@@ -36,8 +39,15 @@ def validate_tabletop(output):
     plan = json.loads(plan_path.read_text(encoding='utf-8')) if plan_path.exists() else None
     if index.get('plan_fingerprint') and index['plan_fingerprint'] != hashlib.sha256(raw).hexdigest():
         raise ValueError('Export plan fingerprint mismatch')
-    if index['recorded'] != len(index['studies']) or index['planned'] != len(scenarios):
+    # Seeded SO-101 studies follow the plan's ids with their own fingerprint (append-only).
+    arm_path = output / 'tabletop/arm-scenarios.json'
+    arm_raw = arm_path.read_bytes() if arm_path.exists() else b'[]'
+    arm = json.loads(arm_raw)
+    if index.get('arm_fingerprint') and index['arm_fingerprint'] != hashlib.sha256(arm_raw).hexdigest():
+        raise ValueError('Export arm study fingerprint mismatch')
+    if index['recorded'] != len(index['studies']) or index['planned'] != len(scenarios) or index.get('arm_planned', len(arm)) != len(arm):
         raise ValueError('Export inventory count mismatch')
+    planned = scenarios + arm
     ids, files = set(), set()
     for study in index['studies']:
         ident, filename = study['id'], study['file']
@@ -45,14 +55,14 @@ def validate_tabletop(output):
             raise ValueError('Duplicate export ID or filename')
         ids.add(ident)
         files.add(filename)
-        if not isinstance(ident, int) or not 0 <= ident < len(scenarios) or filename != f'episode-{ident + 1:04d}.json.gz':
+        if not isinstance(ident, int) or not 0 <= ident < len(planned) or filename != f'episode-{ident + 1:04d}.json.gz':
             raise ValueError('Invalid export ID or filename')
         scenario = {k: v for k, v in study.items() if k not in ('metrics', 'provenance', 'frames', 'file', 'bytes', 'sha256')}
         if scenario.get('proposal') and (not plan or scenario['proposal']['planId'] != plan['id'] or scenario['proposal']['model'] != plan['model']):
             raise ValueError('Trajectory proposal differs from published plan')
         with gzip.open(output / 'tabletop' / filename, 'rt', encoding='utf-8') as stream:
             episode = json.load(stream)
-        if scenario != scenarios[ident] or episode['scenario'] != scenario:
+        if scenario != planned[ident] or episode['scenario'] != scenario:
             raise ValueError('Trajectory/index/plan scenario mismatch')
         if episode['metrics'] != study['metrics'] or episode['provenance'] != study['provenance'] or len(episode['frames']) != study['frames']:
             raise ValueError('Trajectory/index measurements mismatch')
@@ -102,7 +112,9 @@ def main():
     if tabletop['recorded'] != len(tabletop['studies']):
         raise ValueError('Recorded tabletop count does not match the exported inventory')
     for study in tabletop['studies']:
-        if not re.fullmatch(r'episode-\d+\.json\.gz', study['file']) or study['frames'] != 361 or not study['metrics']['finite']:
+        # 12 s hand studies; the SO-101 pour runs a 16.9 s timeline (src/tabletop-scenarios.ts)
+        frames = FRAMES.get(study['task'], 361)
+        if not re.fullmatch(r'episode-\d+\.json\.gz', study['file']) or study['frames'] != frames or not study['metrics']['finite']:
             raise ValueError('Invalid tabletop export inventory')
         file = OUTPUT / 'tabletop' / study['file']
         study['bytes'] = file.stat().st_size
@@ -110,8 +122,8 @@ def main():
     write(OUTPUT / 'tabletop/index.json', tabletop)
     overview = []
     for study in tabletop['studies']:
-        pouring = study['task'] == 'pour'
-        overview.append({'study_id': study['id'] + 1, 'task': study['task'], 'shape': 'cup' if pouring else study['shape'], 'seed': study['seed'], 'frames': study['frames'], 'solid_half_extent_m': None if pouring else study['size'], 'object_mass_kg': .115 if pouring else study['mass'], 'muse_proposed_size_m': study['size'], 'muse_proposed_mass_kg': study['mass'], 'fixed_cup_geometry': pouring, 'surface_friction': study['friction'], 'muse_model': study.get('proposal', {}).get('model'), 'muse_plan_id': study.get('proposal', {}).get('planId'), 'muse_variant': study.get('proposal', {}).get('variant'), 'muse_rationale': study.get('proposal', {}).get('rationale'), 'physics_runtime': study['provenance']['runtime'], 'controller': study['provenance']['controller'], 'finite': study['metrics']['finite'], 'goal_error_m': study['metrics']['goalDistance'], 'retained_particles': study['metrics'].get('retainedParticles'), 'subq_reviewed': False, 'trajectory_file': study['file'], 'sha256': study['sha256']})
+        pouring = study['task'] in ('pour', 'so101')
+        overview.append({'study_id': study['id'] + 1, 'task': study['task'], 'shape': 'cup' if pouring else study['shape'], 'seed': study['seed'], 'frames': study['frames'], 'solid_half_extent_m': None if pouring else study['size'], 'object_mass_kg': .115 if study['task'] == 'pour' else study['mass'], 'muse_proposed_size_m': study['size'], 'muse_proposed_mass_kg': study['mass'], 'fixed_cup_geometry': study['task'] == 'pour', 'surface_friction': study['friction'], 'muse_model': study.get('proposal', {}).get('model'), 'muse_plan_id': study.get('proposal', {}).get('planId'), 'muse_variant': study.get('proposal', {}).get('variant'), 'muse_rationale': study.get('proposal', {}).get('rationale'), 'physics_runtime': study['provenance']['runtime'], 'controller': study['provenance']['controller'], 'finite': study['metrics']['finite'], 'goal_error_m': study['metrics']['goalDistance'], 'retained_particles': study['metrics'].get('retainedParticles'), 'subq_reviewed': False, 'trajectory_file': study['file'], 'sha256': study['sha256']})
     (OUTPUT / 'tabletop/summary.jsonl').write_text('\n'.join(json.dumps(row) for row in overview) + '\n', encoding='utf-8')
     collections.insert(0, {'id': 'tabletop-grip-v2', 'label': 'Palm-aligned tabletop manipulation', 'episodes': tabletop['recorded'], 'source': 'MuJoCo 4 WASM + Muse proposals', 'description': '12s, custom five-finger hand, geometry-calibrated assisted grips. Cups use rigid particles, not continuum water.', 'path': 'tabletop'})
     catalog = {'dataset_url': HF, 'collections': collections, 'tabletop': {'planned': tabletop['planned'], 'recorded': tabletop['recorded']}, 'muse': {'model': plan['model'], 'variants': len(plan['variants']), 'planId': plan['id'], 'rationale': [v['rationale'] for v in plan['variants']]}, 'subq': reviews}

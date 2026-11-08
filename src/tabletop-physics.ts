@@ -6,7 +6,7 @@ import { simulateSo101Pour } from './so101-pour';
 
 export type TableGeom = { id: number; type: 'mesh' | 'box' | 'sphere' | 'cylinder'; size: number[]; color: string; mesh?: { vertices: number[]; faces: number[] } };
 export type TableFrame = { time: number; positions: number[][]; rotations: number[][]; contacts: number; object: number[]; objectCenter: number[]; palm: number[]; palmNormal: number[]; graspCenter: number[]; holding: boolean };
-export type TableEpisode = { scenario: Scenario; geoms: TableGeom[]; frames: TableFrame[]; metrics: { finite: boolean; contacts: number; goalDistance: number; retainedParticles?: number; totalParticles?: number; sourceParticles?: number; spilledParticles?: number; cupsUpright?: boolean; trackingError?: number; tilt?: number; graspPitch?: number }; provenance: { runtime: string; controller: string; fluid: string; timestep: number; hand: string; handActuators: number } };
+export type TableEpisode = { scenario: Scenario; geoms: TableGeom[]; frames: TableFrame[]; metrics: { finite: boolean; contacts: number; goalDistance: number; retainedParticles?: number; totalParticles?: number; sourceParticles?: number; spilledParticles?: number; cupsUpright?: boolean; trackingError?: number; wristTrackingError?: number; commandedTilt?: number; achievedTilt?: number; graspPitch?: number }; provenance: { runtime: string; controller: string; fluid: string; timestep: number; hand: string; handActuators: number } };
 let robotFiles: Promise<{ xml: string; files: { name: string; bytes: Uint8Array }[] }> | undefined;
 async function robotAssets() {
   return robotFiles ??= (async () => {

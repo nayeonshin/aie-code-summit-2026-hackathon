@@ -31,7 +31,9 @@ export function so101PhaseAt(time: number): { name: So101Phase; label: string; s
   const [name, seconds, label] = so101Timeline[so101Timeline.length - 1];
   return { name, label, start: start - seconds, end: start };
 }
-function so101Scenarios(first: number): Scenario[] {
+/** The 25 seeded SO-101 studies, numbered from ``first``. They are not part of any Muse
+ *  plan: a saved collection keeps its identity, and the library appends these after it. */
+export function armStudies(first: number): Scenario[] {
   return Array.from({ length: 25 }, (_, k) => {
     const id = first + k, seed = 20261107 + 7919 * (k + 1), random = randomGenerator(seed);
     const deg = Math.PI / 180, at = (r: number, bearing: number): [number, number] => [so101Pan[0] + r * Math.cos(bearing), so101Pan[1] + r * Math.sin(bearing)];
@@ -51,12 +53,15 @@ export const scenarios: Scenario[] = Array.from({ length: 100 }, (_, id): Scenar
     size: .023 + random() * .009, mass: .04 + random() * .08, friction: .5 + random() * .5,
     start: [-.19 + random() * .035, -.045 + random() * .08], goal: [.16 + random() * .03, -.025 + random() * .06],
     color: ['#bf896e', '#a2af87', '#8ba9ba', '#c4ab75'][id % 4] };
-}).concat(so101Scenarios(100));
+});
 export const duration = 12;
 export const sampleHz = 30;
 /** Seconds in one episode: the hand studies are 12 s, the SO-101 pour runs its own timeline. */
 export const durationOf = (task: Task) => task === 'so101' ? so101Seconds : duration;
 export const phaseAt = (task: Task, time: number) => task === 'so101' ? so101PhaseAt(time).label : time < 1.5 ? 'Approach' : time < 3 ? (task === 'push' ? 'Contact' : 'Attach · assisted') : time < 7.5 ? (task === 'pour' ? 'Tilt & pour' : task === 'push' ? 'Push' : 'Transport') : time < 9 ? 'Release' : 'Settle & measure';
+
+/** A collection as the library shows it: the hand studies, then the SO-101 studies. */
+export const withArm = (collection: Scenario[]) => collection.concat(armStudies(collection.length));
 
 export function validateTableVariants(value: unknown): TableVariant[] {
   if (!Array.isArray(value) || value.length < 12 || value.length > 60) throw new Error('Muse must propose 12–60 tabletop variants.');
@@ -74,5 +79,5 @@ export function createCollection(plan: TablePlan): Scenario[] {
     const jitter = () => .96 + random() * .08;
     return { id, seed, task: v.task, shape: v.shape, title: v.task === 'pour' ? 'Pour into receiving cup' : `${taskNames[v.task]} · ${v.shape}`, size: Math.max(.02, Math.min(.035, v.size * jitter())), mass: Math.max(.035, Math.min(.14, v.mass * jitter())), friction: Math.max(.3, Math.min(1.2, v.friction * jitter())),
       start: [-.23 + random() * .07, v.startY], goal: [.14 + random() * .07, v.goalY], color: ['#bf896e', '#a2af87', '#8ba9ba', '#c4ab75'][id % 4], motion: { speed: v.speed, lift: v.lift, lateral: v.lateral }, proposal: { planId: plan.id, model: plan.model, variant: id % variants.length, rationale: v.rationale } } as Scenario;
-  }).concat(so101Scenarios(plan.count));
+  });
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Box, Check, ChevronDown, Droplets, Download, Loader2, Pause, Play, RotateCcw, Search, Shuffle, X, Database } from 'lucide-react';
-import { scenarios, createCollection, taskNames, durationOf, isPour, sampleHz, type Task, type TablePlan } from './tabletop-scenarios';
+import { scenarios, createCollection, withArm, taskNames, durationOf, isPour, sampleHz, type Task, type TablePlan } from './tabletop-scenarios';
 import { DataExplorer } from './data-explorer';
 import './data-explorer.css';
 import { TabletopRenderer } from './tabletop-renderer';
@@ -14,7 +14,7 @@ export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
   const [selected, setSelected] = useState(0), [episode, setEpisode] = useState<TableEpisode | null>(null), [frame, setFrame] = useState(0);
   const [playing, setPlaying] = useState(true), [speed, setSpeed] = useState(1), [filter, setFilter] = useState<Task | 'all'>('all'), [query, setQuery] = useState('');
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(true), [error, setError] = useState(''), [visited, setVisited] = useState<Set<number>>(new Set()), [browserOpen, setBrowserOpen] = useState(false);
-  const [collection, setCollection] = useState(scenarios), [plan, setPlan] = useState<TablePlan | null>(null), [dataOpen, setDataOpen] = useState(false);
+  const [collection, setCollection] = useState(() => withArm(scenarios)), [plan, setPlan] = useState<TablePlan | null>(null), [dataOpen, setDataOpen] = useState(false);
   const [grid, setGrid] = useState(false), [views, setViews] = useState(9), [page, setPage] = useState(0);
   const time = frame / sampleHz, duration = durationOf(collection[selected]?.task ?? 'transfer');
   const filtered = collection.filter(s => (filter === 'all' || s.task === filter) && `${s.title} ${s.id + 1} ${s.seed} ${s.proposal?.rationale ?? ''}`.toLowerCase().includes(query.toLowerCase()));
@@ -47,7 +47,7 @@ export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
     let disposed = false;
     (async () => {
       for (const url of ['/api/tabletop/plans/latest', '/data/tabletop-plan.json']) {
-        try { const response = await fetch(url, { signal: AbortSignal.timeout(5000) }); if (!response.ok) continue; const next = await response.json(); const studies = createCollection(next); if (disposed) return; setPlan(next); setCollection(studies); w.postMessage({ type: 'collection', plan: next }); break; } catch {}
+        try { const response = await fetch(url, { signal: AbortSignal.timeout(5000) }); if (!response.ok) continue; const next = await response.json(); const studies = withArm(createCollection(next)); if (disposed) return; setPlan(next); setCollection(studies); w.postMessage({ type: 'collection', plan: next }); break; } catch {}
       }
       if (!disposed) { w.postMessage({ type: 'init' }); w.postMessage({ type: 'select', id: selectedRef.current }); }
     })();
