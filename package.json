@@ -17,7 +17,10 @@
     "test:assets": "node scripts/check_asset_fetch.mjs",
     "test:tabletop": "npm run prepare:cloud && node scripts/check_tabletop.mjs --all",
     "test:cloud": "node scripts/check_cloud.mjs",
-    "test:first-launch": "node scripts/check_first_launch.mjs"
+    "test:first-launch": "node scripts/check_first_launch.mjs",
+    "test:recordings": "node scripts/check_tabletop_recordings.mjs",
+    "test:recording-proxy": "node scripts/check_recording_proxy.mjs",
+    "compact:tabletop": "python -m scripts.compact_tabletop --workers=4"
   },
   "dependencies": {
     "@mujoco/mujoco": "^4.0.0",

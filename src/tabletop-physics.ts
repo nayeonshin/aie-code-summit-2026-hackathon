@@ -5,7 +5,7 @@ import { calibrateGrasp, rotateY, graspController } from './grasp';
 
 export type TableGeom = { id: number; type: 'mesh' | 'box' | 'sphere' | 'cylinder'; size: number[]; color: string; mesh?: { vertices: number[]; faces: number[] } };
 export type TableFrame = { time: number; positions: number[][]; rotations: number[][]; contacts: number; object: number[]; objectCenter: number[]; palm: number[]; palmNormal: number[]; graspCenter: number[]; holding: boolean };
-export type TableEpisode = { scenario: Scenario; geoms: TableGeom[]; frames: TableFrame[]; metrics: { finite: boolean; contacts: number; goalDistance: number; retainedParticles?: number; totalParticles?: number }; provenance: { runtime: string; controller: string; fluid: string; timestep: number; hand: string; handActuators: number } };
+export type TableEpisode = { scenario: Scenario; geoms: TableGeom[]; frames: TableFrame[]; metrics: { finite: boolean; contacts: number; goalDistance: number; retainedParticles?: number; totalParticles?: number }; provenance: { runtime: string; controller: string; fluid: string; timestep: number; hand: string; handActuators: number }; recording?: { dataset_url: string; revision: string; file: string; sha256: string } };
 let robotFiles: Promise<{ xml: string; files: { name: string; bytes: Uint8Array }[] }> | undefined;
 async function robotAssets() {
   return robotFiles ??= (async () => {

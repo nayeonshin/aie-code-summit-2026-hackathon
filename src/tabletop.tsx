@@ -7,6 +7,7 @@ import { TabletopRenderer } from './tabletop-renderer';
 import type { TableEpisode } from './tabletop-physics';
 import './tabletop.css';
 import { TabletopGrid } from './tabletop-grid';
+import { Dropdown } from './dropdown';
 
 export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
   const canvas = useRef<HTMLCanvasElement>(null), renderer = useRef<TabletopRenderer | null>(null), worker = useRef<Worker | null>(null);
@@ -35,7 +36,7 @@ export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
     w.onmessage = event => {
       const data = event.data;
       if (data.type === 'ready') setReady(true);
-      if (data.type === 'error') { setError(data.error); setBusy(false); }
+      if (data.type === 'error' && (!Number.isInteger(data.id) || data.id === selectedRef.current)) { setError(data.error); setBusy(false); }
       if (data.type === 'episode') {
         setVisited(prev => new Set([...prev, data.id]));
         if (data.id !== selectedRef.current) return;
@@ -86,7 +87,7 @@ export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
     <header className="tt-header">
       <div className="wordmark"><img className="labbit-mark" src="/labbit.svg" alt=""/><span>labbit<span className="wordmark-light"> / lab</span></span></div>
       <nav className="tt-modes" aria-label="Workspace"><button className={!grid ? 'active' : ''} onClick={() => setGrid(false)}>Single</button><button className={grid ? 'active' : ''} onClick={() => setGrid(true)}>Grid</button></nav>
-      <div className="tt-header-tools">{grid && <><select aria-label="Grid task" value={filter} onChange={e => setFilter(e.target.value as Task | 'all')}>{['all', 'transfer', 'push', 'stack', 'pour'].map(task => <option key={task} value={task}>{task === 'all' ? 'All' : task}</option>)}</select><select aria-label="Simultaneous simulations" value={views} onChange={e => { setViews(Number(e.target.value)); setPage(0); }}>{[4, 9, 16, 25].map(n => <option key={n} value={n}>{n} views</option>)}</select></>}<button className="tt-data-button" aria-label="Data & AI" title="Data & AI" onClick={() => setDataOpen(true)}><Database size={16}/></button></div>
+      <div className="tt-header-tools">{grid && <><Dropdown label="Grid task" value={filter} options={['all', 'transfer', 'push', 'stack', 'pour'].map(task => ({ value: task, label: task === 'all' ? 'All' : task }))} onChange={value => setFilter(value as Task | 'all')}/><Dropdown label="Simultaneous simulations" value={String(views)} options={[4, 9, 16, 25].map(n => ({ value: String(n), label: `${n} views` }))} onChange={value => { setViews(Number(value)); setPage(0); }}/></>}<button className="tt-data-button" aria-label="Data & AI" title="Data & AI" onClick={() => setDataOpen(true)}><Database size={16}/></button></div>
     </header>
     <div className="tt-layout">
       <aside className={`tt-library ${browserOpen ? 'open' : ''}`} aria-label="Simulation library">
@@ -111,7 +112,7 @@ export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
         <div className="tt-playback">
           <div className="tt-transport"><button aria-label="Previous simulation" onClick={() => move(-1)}><ArrowLeft size={18}/></button><button className="tt-play" disabled={!episode || busy} aria-label={playing ? 'Pause tabletop playback' : 'Play tabletop playback'} onClick={togglePlay}>{playing ? <Pause size={19}/> : <Play size={19}/>}</button><button aria-label="Next simulation" onClick={() => move(1)}><ArrowRight size={18}/></button><button aria-label="Restart tabletop playback" disabled={!episode} onClick={() => seek(0)}><RotateCcw size={17}/></button></div>
            <div className="tt-timeline"><div className="tt-timeline-label"><span>{time.toFixed(1)} / {duration}s</span></div><input aria-label="Tabletop playback position" type="range" min="0" max={duration * sampleHz} step="1" value={frame} disabled={!episode || busy} onChange={e => seek(Number(e.target.value))}/></div>
-          <label className="tt-speed"><span className="tt-eyebrow">SPEED</span><select aria-label="Playback speed" value={speed} onChange={e => { speedRef.current = Number(e.target.value); setSpeed(speedRef.current); }}>{[.25, .5, 1, 2].map(n => <option key={n} value={n}>{n}×</option>)}</select></label><button aria-label="Random simulation" title="Explore another study" onClick={() => choose(filtered[Math.floor(Math.random() * filtered.length)]?.id ?? 0)}><Shuffle size={18}/></button>
+          <Dropdown label="Playback speed" value={String(speed)} options={[.25, .5, 1, 2].map(n => ({ value: String(n), label: `${n}×` }))} up onChange={value => { speedRef.current = Number(value); setSpeed(speedRef.current); }}/><button aria-label="Random simulation" title="Explore another study" onClick={() => choose(filtered[Math.floor(Math.random() * filtered.length)]?.id ?? 0)}><Shuffle size={18}/></button>
         </div>
       </section>
       {grid && <section className="tt-grid-workspace" aria-label="Simultaneous tabletop simulations">{gridIds.length ? <TabletopGrid ids={gridIds} collection={collection} plan={plan} playing={playing} speed={speed} onSelect={id => { setGrid(false); choose(id); }}/> : <p>No matches</p>}<div className="tt-grid-controls"><button aria-label="Previous simulation page" disabled={page === 0} onClick={() => setPage(p => p - 1)}><ArrowLeft size={18}/></button><button aria-label={playing ? 'Pause grid playback' : 'Play grid playback'} onClick={togglePlay}>{playing ? <Pause size={18}/> : <Play size={18}/>}</button><span>{page + 1} / {Math.max(1, Math.ceil(filtered.length / views))}</span><button aria-label="Next simulation page" disabled={(page + 1) * views >= filtered.length} onClick={() => setPage(p => p + 1)}><ArrowRight size={18}/></button></div></section>}

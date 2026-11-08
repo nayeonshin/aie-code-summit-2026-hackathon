@@ -5,4 +5,4 @@ export default defineConfig({ plugins: [react(), { name: 'precompress-physics', 
   for (const output of Object.values(bundle)) if (output.type === 'asset' && output.fileName.endsWith('.wasm')) {
     this.emitFile({ type: 'asset', fileName: output.fileName + '.gz', source: gzipSync(output.source) });
   }
-} }], server: { proxy: { '/api': { target: 'http://127.0.0.1:8000', ws: true }, '/datasets': 'http://127.0.0.1:8000' } } });
+} }], server: { proxy: { '/api/tabletop/recordings': { target: 'https://hand-studio.hidden-pond-5e6a.workers.dev', changeOrigin: true }, '/api': { target: 'http://127.0.0.1:8000', ws: true }, '/datasets': 'http://127.0.0.1:8000' } } });

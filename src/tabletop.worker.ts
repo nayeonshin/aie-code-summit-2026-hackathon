@@ -1,8 +1,17 @@
 import { WasmEngine } from './wasm-engine';
 import { simulateTabletop } from './tabletop-physics';
 import { scenarios, createCollection } from './tabletop-scenarios';
+import { TabletopRecordings } from './tabletop-recordings';
 
-let engine: WasmEngine;
+let engine: WasmEngine | undefined;
+let initialized = false;
+let recordings: TabletopRecordings | null = null;
+async function episodeFor(id: number) {
+  const published = await recordings?.load(collection[id]);
+  if (published) return published;
+  engine ??= await WasmEngine.create();
+  return simulateTabletop(engine.mj, collection[id]);
+}
 let pending: number | null = null;
 let gridQueue: number[] = [];
 let working = false;
@@ -10,24 +19,29 @@ let collection = scenarios;
 let revision = 0;
 const cache = new Map<number, Awaited<ReturnType<typeof simulateTabletop>>>();
 async function drain() {
-  if (working || !engine) return;
+  if (working || !initialized) return;
   working = true;
   try {
     while (pending !== null || gridQueue.length) {
       const grid = pending === null;
       const id: number = grid ? gridQueue.shift()! : pending!; if (!grid) pending = null;
       const generation = revision;
-      let episode = cache.get(id);
-      if (!episode) { episode = await simulateTabletop(engine.mj, collection[id]); if (generation !== revision) continue; if (!grid) cache.set(id, episode); }
-      // Keep memory bounded: the 100 scenarios are generated on demand, not all resident.
-      if (cache.size > 6) cache.delete(cache.keys().next().value!);
-      if (grid) {
-        // Grid playback needs transforms only: 10 Hz and packed float buffers.
-        const frames = episode.frames.filter((_, i) => i % 3 === 0);
-        const positions = new Float32Array(frames.flatMap(f => f.positions.flat()));
-        const rotations = new Float32Array(frames.flatMap(f => f.rotations.flat()));
-        self.postMessage({ type: 'gridEpisode', id, scenario: episode.scenario, geoms: episode.geoms, metrics: episode.metrics, provenance: episode.provenance, positions, rotations, length: frames.length }, { transfer: [positions.buffer, rotations.buffer] });
-      } else self.postMessage({ type: 'episode', id, episode });
+      try {
+        let episode = cache.get(id);
+        if (!episode) { episode = await episodeFor(id); if (generation !== revision) continue; if (!grid) cache.set(id, episode); }
+        // Keep memory bounded: only six full episodes are resident in the worker.
+        if (cache.size > 6) cache.delete(cache.keys().next().value!);
+        if (grid) {
+          // Grid playback needs transforms only: 10 Hz and packed float buffers.
+          const frames = episode.frames.filter((_, i) => i % 3 === 0);
+          const positions = new Float32Array(frames.flatMap(f => f.positions.flat()));
+          const rotations = new Float32Array(frames.flatMap(f => f.rotations.flat()));
+          self.postMessage({ type: 'gridEpisode', id, scenario: episode.scenario, geoms: episode.geoms, metrics: episode.metrics, provenance: episode.provenance, recording: episode.recording, positions, rotations, length: frames.length }, { transfer: [positions.buffer, rotations.buffer] });
+        } else self.postMessage({ type: 'episode', id, episode });
+      } catch (error) {
+        if (generation === revision) self.postMessage({ type: 'error', id, grid, error: (error as Error).message });
+        // A failed/stale download must not discard a newer queued selection.
+      }
     }
   } catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); }
   finally { working = false; }
@@ -38,7 +52,7 @@ self.onmessage = async event => {
   if (type === 'collection') { try { collection = createCollection(plan); revision++; cache.clear(); } catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); } }
   if (type === 'select' && Number.isInteger(id) && id >= 0 && id < collection.length) { pending = id; void drain(); }
   if (type === 'init') {
-    try { engine = await WasmEngine.create(); self.postMessage({ type: 'ready' }); void drain(); }
+    try { recordings = await TabletopRecordings.open(); initialized = true; self.postMessage({ type: 'ready' }); void drain(); }
     catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); }
   }
 };

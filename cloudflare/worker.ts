@@ -1,5 +1,6 @@
 import { plan, recipes, allocation, schedule, type Variant } from '../src/objectives';
 import { validateTableVariants } from '../src/tabletop-scenarios';
+import { recordingResponse } from './tabletop-recordings';
 
 interface Env { ASSETS: Fetcher; DATA: R2Bucket; COORDINATOR: DurableObjectNamespace; ADMIN_TOKEN: string; SUBQ_API_KEY?: string; MODEL_API_KEY?: string; META_MODEL: string; AI_BUDGET_USD: string }
 type Manifest = { id: string; schema_version: number; status: string; attempted: number; valid: number; objective_passed: number; annotated: number; updated_at: string; coverage: Record<string, number>; shards: { file: string; first: number; episodes: number; sha256: string; bytes: number }[]; config: { count: number; seconds: number; seed: number; objective_quotas: Record<string, number>; provenance: unknown; variants?: Variant[] } };
@@ -31,6 +32,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname;
     try {
+      if (path.startsWith('/api/tabletop/recordings/')) return await recordingResponse(request, typeof caches === 'undefined' ? undefined : caches.default);
       if (path === '/api/health') return json({ runtime: 'browser-wasm', subq_configured: !!env.SUBQ_API_KEY, meta_configured: !!env.MODEL_API_KEY, recipes });
       if (path === '/api/tabletop/plans/latest' && request.method === 'GET') { const object = await env.DATA.get('tabletop/latest-plan.json'); return object ? json(await object.json()) : bad('No Muse tabletop plan has been generated yet.', 404); }
       if (request.method !== 'GET' && request.method !== 'HEAD') {

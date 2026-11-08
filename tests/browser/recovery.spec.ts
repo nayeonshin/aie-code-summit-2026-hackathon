@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async ({ page }) => { await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ status: 404 })); });
 
 test('resume refreshes the row and starts progress polling without reopening panel', async ({ page }) => {
   const run = { id: 'resume-fixture', status: 'interrupted', attempted: 10, valid: 10, config: { count: 100 } };

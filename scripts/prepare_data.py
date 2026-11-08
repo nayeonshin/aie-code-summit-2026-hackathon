@@ -20,7 +20,7 @@ HF = 'https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation'
 def download(url):
     # curl uses the same HTTP transport as the documented dataset-download
     # commands; Python's default urllib transport is rejected by this deployment.
-    return subprocess.check_output(['curl', '--fail', '--retry', '3', '--max-time', '180', '-sS', url])
+    return subprocess.check_output(['curl', '--fail', '--location', '--retry', '3', '--max-time', '180', '-sS', url])
 
 
 def write(path, value):

@@ -1,0 +1,3865 @@
+{
+  "schema_version": 1,
+  "plan_fingerprint": "d5f7cb0d69576c689a3a7d04a586253df888b49426ebe5882c7ddf05b5da36b9",
+  "planned": 1000,
+  "recorded": 100,
+  "sample_hz": 30,
+  "episodes": [
+    {
+      "id": 0,
+      "scenario": {
+        "id": 0,
+        "seed": 20261107,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.03935984255108982,
+        "friction": 0.3053908009529113,
+        "start": [
+          -0.17933234404074028,
+          -0.08
+        ],
+        "goal": [
+          0.1799414606112987,
+          0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 0.9,
+          "lift": 0.13,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 0,
+          "rationale": "small, light, slippery: low-drag flight payload"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0001.json.gz",
+      "sha256": "60965436b95b957a5801501ca6285aca5b79556e4e7626d1e5f2dc778006eba3",
+      "bytes": 655125,
+      "standalone_file": "episode-0001.json.gz"
+    },
+    {
+      "id": 1,
+      "scenario": {
+        "id": 1,
+        "seed": 20261204,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03495226895185188,
+        "mass": 0.14,
+        "friction": 1.1854119800850749,
+        "start": [
+          -0.22150484604295345,
+          -0.1
+        ],
+        "goal": [
+          0.17104188288562,
+          0.03
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.22,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 1,
+          "rationale": "high road-sweep friction; heavy box-winch"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0002.json.gz",
+      "sha256": "7dddcbea843a0445462b457ee290fb4e7309caba02c6313dfeda64b9e24f65a8",
+      "bytes": 658069,
+      "standalone_file": "episode-0002.json.gz"
+    },
+    {
+      "id": 2,
+      "scenario": {
+        "id": 2,
+        "seed": 20261301,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03402861917139963,
+        "mass": 0.04159211948290468,
+        "friction": 0.5627278058938682,
+        "start": [
+          -0.2027235792670399,
+          0.09
+        ],
+        "goal": [
+          0.14777854942250998,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.98,
+          "lift": 0.15,
+          "lateral": 0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 2,
+          "rationale": "pour size mass mapping: release angle sensitivity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0003.json.gz",
+      "sha256": "04a396d0d80a3caae05dbd382b9d4c0f2beace32f11b61f5c357995c009e1154",
+      "bytes": 2572069,
+      "standalone_file": "episode-0003.json.gz"
+    },
+    {
+      "id": 3,
+      "scenario": {
+        "id": 3,
+        "seed": 20261398,
+        "task": "stack",
+        "shape": "sphere",
+        "title": "Stack & balance \u00b7 sphere",
+        "size": 0.03386121382275596,
+        "mass": 0.03582726263664663,
+        "friction": 0.5679236872568727,
+        "start": [
+          -0.17895515059353784,
+          -0.09
+        ],
+        "goal": [
+          0.17349049114855009,
+          0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.12,
+          "lateral": -0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 3,
+          "rationale": "light wedge pick"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0004.json.gz",
+      "sha256": "1a1177be475828f1578bb9ebad86868741962682d66995b25be8c11ef350c637",
+      "bytes": 637258,
+      "standalone_file": "episode-0004.json.gz"
+    },
+    {
+      "id": 4,
+      "scenario": {
+        "id": 4,
+        "seed": 20261495,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03443439550027251,
+        "mass": 0.10802343306411057,
+        "friction": 0.4469595206659287,
+        "start": [
+          -0.1847740926919505,
+          -0.02
+        ],
+        "goal": [
+          0.19753375317668545,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 4,
+          "rationale": "slippery-heavy pour: particle stream coherence"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0005.json.gz",
+      "sha256": "cc78112c7f625dc1bc5349f6374fe37612de8738aff5f908d8fae0224734a7d9",
+      "bytes": 2575373,
+      "standalone_file": "episode-0005.json.gz"
+    },
+    {
+      "id": 5,
+      "scenario": {
+        "id": 5,
+        "seed": 20261592,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.034662785365432505,
+        "mass": 0.14,
+        "friction": 1.168313627667725,
+        "start": [
+          -0.16448268772801383,
+          0.06
+        ],
+        "goal": [
+          0.14492516841506586,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 5,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0006.json.gz",
+      "sha256": "66d868337e05740b0aafb8c65375e1d72fd3e6c799e63e03ecf76a1353c61399",
+      "bytes": 2582263,
+      "standalone_file": "episode-0006.json.gz"
+    },
+    {
+      "id": 6,
+      "scenario": {
+        "id": 6,
+        "seed": 20261689,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.2,
+        "start": [
+          -0.1896120838285424,
+          0.1
+        ],
+        "goal": [
+          0.177610385036096,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 6,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0007.json.gz",
+      "sha256": "e0ec41411666fdccb4d9a0eda6b2232e48b2f76ea0b2be7434f96ed2920cd443",
+      "bytes": 638965,
+      "standalone_file": "episode-0007.json.gz"
+    },
+    {
+      "id": 7,
+      "scenario": {
+        "id": 7,
+        "seed": 20261786,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03380602199099958,
+        "mass": 0.09697218211675061,
+        "friction": 0.7893375046998262,
+        "start": [
+          -0.1692097884370014,
+          -0.06
+        ],
+        "goal": [
+          0.17329183488385752,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 7,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0008.json.gz",
+      "sha256": "99d5315d22fc9efd003822b0b7c64cfd2eaac398ff404480ec68ec1a731b6f5c",
+      "bytes": 657578,
+      "standalone_file": "episode-0008.json.gz"
+    },
+    {
+      "id": 8,
+      "scenario": {
+        "id": 8,
+        "seed": 20261883,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12973161617759615,
+        "friction": 1.2,
+        "start": [
+          -0.22908773970557378,
+          -0.05
+        ],
+        "goal": [
+          0.16139393237885089,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 8,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0009.json.gz",
+      "sha256": "d370f97dbe3c1697b384db7580e62abfbb33811f33203868ece6027cd46de232",
+      "bytes": 2579928,
+      "standalone_file": "episode-0009.json.gz"
+    },
+    {
+      "id": 9,
+      "scenario": {
+        "id": 9,
+        "seed": 20261980,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13484344057075373,
+        "friction": 1.1564359198138117,
+        "start": [
+          -0.16403962065000088,
+          0.1
+        ],
+        "goal": [
+          0.15117660221410917,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 9,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0010.json.gz",
+      "sha256": "cf38636d4e7ae157cac701bd088528fd0a3ee5e83ebe9b27474b842b02edc13f",
+      "bytes": 645883,
+      "standalone_file": "episode-0010.json.gz"
+    },
+    {
+      "id": 10,
+      "scenario": {
+        "id": 10,
+        "seed": 20262077,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03450114565445111,
+        "mass": 0.10829763329066336,
+        "friction": 0.4599447621256113,
+        "start": [
+          -0.2060501102730632,
+          -0.02
+        ],
+        "goal": [
+          0.20649517815792934,
+          0.02
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 10,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0011.json.gz",
+      "sha256": "95c2152f9250f638c1b4f9882c4ced726aabaf6cc11462f04f47c260d9163c70",
+      "bytes": 652121,
+      "standalone_file": "episode-0011.json.gz"
+    },
+    {
+      "id": 11,
+      "scenario": {
+        "id": 11,
+        "seed": 20262174,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.034343448503874247,
+        "mass": 0.14,
+        "friction": 1.1684043777287005,
+        "start": [
+          -0.21565679552266376,
+          0.06
+        ],
+        "goal": [
+          0.14208099458832296,
+          -0.08
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 11,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0012.json.gz",
+      "sha256": "dfce17f543bddb5031551c1cbe124c5f41808b1d9aafe5bf06a824bd370087f7",
+      "bytes": 2571692,
+      "standalone_file": "episode-0012.json.gz"
+    },
+    {
+      "id": 12,
+      "scenario": {
+        "id": 12,
+        "seed": 20262271,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13232652565132672,
+        "friction": 1.2,
+        "start": [
+          -0.1729422233439982,
+          0.1
+        ],
+        "goal": [
+          0.20878049411578106,
+          -0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 12,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0013.json.gz",
+      "sha256": "db43c76088c821793172228a7762a0da367f9610f2bbb02693f6641b6476673d",
+      "bytes": 642091,
+      "standalone_file": "episode-0013.json.gz"
+    },
+    {
+      "id": 13,
+      "scenario": {
+        "id": 13,
+        "seed": 20262368,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.09159242378752679,
+        "friction": 0.8013517856895924,
+        "start": [
+          -0.17967707321280613,
+          -0.06
+        ],
+        "goal": [
+          0.1487797737447545,
+          0.06
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 13,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0014.json.gz",
+      "sha256": "0aae1a937378c851ea1ee874bed52010c648fe78e52c28a764e66ad748214287",
+      "bytes": 662962,
+      "standalone_file": "episode-0014.json.gz"
+    },
+    {
+      "id": 14,
+      "scenario": {
+        "id": 14,
+        "seed": 20262465,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12869446854805575,
+        "friction": 1.2,
+        "start": [
+          -0.2157019411888905,
+          -0.05
+        ],
+        "goal": [
+          0.1880365241179243,
+          0.05
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 14,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0015.json.gz",
+      "sha256": "016e440457171674a2df4d5a79cf3cc3e663ebf27ad9fa24329fb5a9a4624ea0",
+      "bytes": 2574571,
+      "standalone_file": "episode-0015.json.gz"
+    },
+    {
+      "id": 15,
+      "scenario": {
+        "id": 15,
+        "seed": 20262562,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.034219734696391974,
+        "mass": 0.13908751584487417,
+        "friction": 1.2,
+        "start": [
+          -0.19463108392432332,
+          0.1
+        ],
+        "goal": [
+          0.16679108902812007,
+          -0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 15,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0016.json.gz",
+      "sha256": "808a2dc34a1439fedd0213de205baa1039e3cb56c33f3aedcad49fb9e6c44b3e",
+      "bytes": 642973,
+      "standalone_file": "episode-0016.json.gz"
+    },
+    {
+      "id": 16,
+      "scenario": {
+        "id": 16,
+        "seed": 20262659,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03370362382009626,
+        "mass": 0.10660686471723019,
+        "friction": 0.4339329996071756,
+        "start": [
+          -0.22387160568963738,
+          -0.02
+        ],
+        "goal": [
+          0.1603900836640969,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 16,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0017.json.gz",
+      "sha256": "8fb1ef95d3130d34610438169e7db581f0e58dbe92ed656c4bd42cb0b85bb871",
+      "bytes": 653027,
+      "standalone_file": "episode-0017.json.gz"
+    },
+    {
+      "id": 17,
+      "scenario": {
+        "id": 17,
+        "seed": 20262756,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.13866127124391497,
+        "friction": 1.1709092301875352,
+        "start": [
+          -0.21968124139355497,
+          0.06
+        ],
+        "goal": [
+          0.2024173848074861,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 17,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0018.json.gz",
+      "sha256": "a7bd728631a5936761b572d3f0a3729996dccf868b483b8030230c9a2b812f86",
+      "bytes": 2571731,
+      "standalone_file": "episode-0018.json.gz"
+    },
+    {
+      "id": 18,
+      "scenario": {
+        "id": 18,
+        "seed": 20262853,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.03366111984588206,
+        "mass": 0.13594507526044974,
+        "friction": 1.1585126125663519,
+        "start": [
+          -0.20821694059064613,
+          0.1
+        ],
+        "goal": [
+          0.17477249217219654,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 18,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0019.json.gz",
+      "sha256": "8cdfaf0cf9515a5c09832dc3981af6d7d2680daa8e54775c3b4311174b685194",
+      "bytes": 640047,
+      "standalone_file": "episode-0019.json.gz"
+    },
+    {
+      "id": 19,
+      "scenario": {
+        "id": 19,
+        "seed": 20262950,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.09440918413549661,
+        "friction": 0.8188521883189678,
+        "start": [
+          -0.18678091522073373,
+          -0.06
+        ],
+        "goal": [
+          0.17844191176816823,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 19,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0020.json.gz",
+      "sha256": "3f2c8b66107908fd1725cb1e0a451ce1d045ce9f7ab49d50f75d9fb4bbe02537",
+      "bytes": 656912,
+      "standalone_file": "episode-0020.json.gz"
+    },
+    {
+      "id": 20,
+      "scenario": {
+        "id": 20,
+        "seed": 20263047,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12956903548911214,
+        "friction": 1.2,
+        "start": [
+          -0.18449229926336558,
+          -0.05
+        ],
+        "goal": [
+          0.19261263814289126,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 20,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0021.json.gz",
+      "sha256": "58f30f259729b534e9c1b4cbc6a4a00029f7c9c9ff11a322e7d044ed3d38bba0",
+      "bytes": 2577579,
+      "standalone_file": "episode-0021.json.gz"
+    },
+    {
+      "id": 21,
+      "scenario": {
+        "id": 21,
+        "seed": 20263144,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13441068195572045,
+        "friction": 1.1688911990448831,
+        "start": [
+          -0.16651284504448996,
+          0.1
+        ],
+        "goal": [
+          0.15991920789238068,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 21,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0022.json.gz",
+      "sha256": "ba9699d12aeaa4b7bc69336e104aa250db7cb3ea202ddd90077654fa7029b76d",
+      "bytes": 643648,
+      "standalone_file": "episode-0022.json.gz"
+    },
+    {
+      "id": 22,
+      "scenario": {
+        "id": 22,
+        "seed": 20263241,
+        "task": "transfer",
+        "shape": "cylinder",
+        "title": "Pick & place \u00b7 cylinder",
+        "size": 0.028933738099634645,
+        "mass": 0.11314833646863699,
+        "friction": 1.049005466144532,
+        "start": [
+          -0.1948623255430721,
+          0.07
+        ],
+        "goal": [
+          0.19707951650721955,
+          -0.03
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.93,
+          "lift": 0.21,
+          "lateral": 0.025
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 22,
+          "rationale": "high-clearance heavy puck: arc-contact diversity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0023.json.gz",
+      "sha256": "7a555ad166b9e295cf1549e212d72c4a055016c2ded0a52739c45f6caa6f8e2c",
+      "bytes": 657813,
+      "standalone_file": "episode-0023.json.gz"
+    },
+    {
+      "id": 23,
+      "scenario": {
+        "id": 23,
+        "seed": 20263338,
+        "task": "push",
+        "shape": "cube",
+        "title": "Surface push \u00b7 cube",
+        "size": 0.022283746000640096,
+        "mass": 0.041819030675031246,
+        "friction": 0.3921028714030981,
+        "start": [
+          -0.21305974170099945,
+          -0.09
+        ],
+        "goal": [
+          0.16695096211275087,
+          0.1
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.04,
+          "lift": 0.14,
+          "lateral": 0.035
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 23,
+          "rationale": "light slippery prism: long lateral push drift"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0024.json.gz",
+      "sha256": "984d985216df7626ec171a9d7722af99495f5876192fdb235cf4eec883b61b37",
+      "bytes": 652603,
+      "standalone_file": "episode-0024.json.gz"
+    },
+    {
+      "id": 24,
+      "scenario": {
+        "id": 24,
+        "seed": 20263435,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.03847936509668827,
+        "friction": 0.3,
+        "start": [
+          -0.20106039091944694,
+          -0.08
+        ],
+        "goal": [
+          0.2033040471863933,
+          0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 0.9,
+          "lift": 0.13,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 0,
+          "rationale": "small, light, slippery: low-drag flight payload"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0025.json.gz",
+      "sha256": "0c6ec38f13fc914d55469c55d20a75b71ddb814314122aeff3e29e217621b868",
+      "bytes": 653323,
+      "standalone_file": "episode-0025.json.gz"
+    },
+    {
+      "id": 25,
+      "scenario": {
+        "id": 25,
+        "seed": 20263532,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03489776106197387,
+        "mass": 0.13826238379217687,
+        "friction": 1.1954321149438618,
+        "start": [
+          -0.2278259937395342,
+          -0.1
+        ],
+        "goal": [
+          0.14937216237420217,
+          0.03
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.22,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 1,
+          "rationale": "high road-sweep friction; heavy box-winch"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0026.json.gz",
+      "sha256": "53f54262e70f6a3f568860d9edb58cde720de607bf53af12a0e74d872a8c8c16",
+      "bytes": 655818,
+      "standalone_file": "episode-0026.json.gz"
+    },
+    {
+      "id": 26,
+      "scenario": {
+        "id": 26,
+        "seed": 20263629,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.04134301743358374,
+        "friction": 0.5686908114515244,
+        "start": [
+          -0.1609378680214286,
+          0.09
+        ],
+        "goal": [
+          0.1409036504244432,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.98,
+          "lift": 0.15,
+          "lateral": 0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 2,
+          "rationale": "pour size mass mapping: release angle sensitivity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0027.json.gz",
+      "sha256": "23dccc69849bdf3071de2478725cae0a4644f1f4f0da71753cca9d8b12a47572",
+      "bytes": 2575889,
+      "standalone_file": "episode-0027.json.gz"
+    },
+    {
+      "id": 27,
+      "scenario": {
+        "id": 27,
+        "seed": 20263726,
+        "task": "stack",
+        "shape": "sphere",
+        "title": "Stack & balance \u00b7 sphere",
+        "size": 0.03430543076815084,
+        "mass": 0.03593142069363967,
+        "friction": 0.5308357385713607,
+        "start": [
+          -0.21545369025552646,
+          -0.09
+        ],
+        "goal": [
+          0.19684402979211885,
+          0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.12,
+          "lateral": -0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 3,
+          "rationale": "light wedge pick"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0028.json.gz",
+      "sha256": "8bd2f4a768e699e1310b5eea9c36ee3489f63ae1bc091257d32d0f4a288389aa",
+      "bytes": 636584,
+      "standalone_file": "episode-0028.json.gz"
+    },
+    {
+      "id": 28,
+      "scenario": {
+        "id": 28,
+        "seed": 20263823,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03474219006048516,
+        "mass": 0.10716661218162626,
+        "friction": 0.46584402468614283,
+        "start": [
+          -0.1635851835459471,
+          -0.02
+        ],
+        "goal": [
+          0.18844104929361494,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 4,
+          "rationale": "slippery-heavy pour: particle stream coherence"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0029.json.gz",
+      "sha256": "03fd05d0454b4bae248c01b205e29a47001017eceec7828deeb8ebfba9a89772",
+      "bytes": 2576541,
+      "standalone_file": "episode-0029.json.gz"
+    },
+    {
+      "id": 29,
+      "scenario": {
+        "id": 29,
+        "seed": 20263920,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.1352627873122692,
+        "friction": 1.2,
+        "start": [
+          -0.1824378831521608,
+          0.06
+        ],
+        "goal": [
+          0.19234935225220398,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 5,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0030.json.gz",
+      "sha256": "6cc37b295789838afd045e27bfa4ce6541919224e82c7ffefbd23fb58d27e7b9",
+      "bytes": 2571835,
+      "standalone_file": "episode-0030.json.gz"
+    },
+    {
+      "id": 30,
+      "scenario": {
+        "id": 30,
+        "seed": 20264017,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.179400250159204,
+        "start": [
+          -0.1710040129418485,
+          0.1
+        ],
+        "goal": [
+          0.14522402673494073,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 6,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0031.json.gz",
+      "sha256": "392c149341790a2ddeb56124310ef17372f7b07bb146a9e26782a2f77e9511e0",
+      "bytes": 637682,
+      "standalone_file": "episode-0031.json.gz"
+    },
+    {
+      "id": 31,
+      "scenario": {
+        "id": 31,
+        "seed": 20264114,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03448922843970359,
+        "mass": 0.09336897749323397,
+        "friction": 0.825646804124117,
+        "start": [
+          -0.17197026481851935,
+          -0.06
+        ],
+        "goal": [
+          0.17972494201967493,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 7,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0032.json.gz",
+      "sha256": "3847bed5ff1cde63618620f8c36d57257af517fad62a998053cd3d61d50e3e51",
+      "bytes": 669305,
+      "standalone_file": "episode-0032.json.gz"
+    },
+    {
+      "id": 32,
+      "scenario": {
+        "id": 32,
+        "seed": 20264211,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03391296715922654,
+        "mass": 0.12061507991049439,
+        "friction": 1.1587305842936038,
+        "start": [
+          -0.1643750964361243,
+          -0.05
+        ],
+        "goal": [
+          0.1921935281646438,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 8,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0033.json.gz",
+      "sha256": "11120354a0ceef39286f63eafc19892bd4ae8e0a9c319e44a2d53d87e4546029",
+      "bytes": 2572634,
+      "standalone_file": "episode-0033.json.gz"
+    },
+    {
+      "id": 33,
+      "scenario": {
+        "id": 33,
+        "seed": 20264308,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13536268151939324,
+        "friction": 1.1571723265573381,
+        "start": [
+          -0.19833515424048528,
+          0.1
+        ],
+        "goal": [
+          0.1852751136571169,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 9,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0034.json.gz",
+      "sha256": "b05cc3e8ef2ba356e4cf2df79c46fbd4a333af446ac7e4d309fb1845f14dae19",
+      "bytes": 640731,
+      "standalone_file": "episode-0034.json.gz"
+    },
+    {
+      "id": 34,
+      "scenario": {
+        "id": 34,
+        "seed": 20264405,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.034211822596285496,
+        "mass": 0.10733149418942631,
+        "friction": 0.43758710898645226,
+        "start": [
+          -0.1903360979887657,
+          -0.02
+        ],
+        "goal": [
+          0.2078260953910649,
+          0.02
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 10,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0035.json.gz",
+      "sha256": "d1d0d650dda5823bfd6e74fe60ccd59367b924a460c57b1257d63e3a535f53e6",
+      "bytes": 662514,
+      "standalone_file": "episode-0035.json.gz"
+    },
+    {
+      "id": 35,
+      "scenario": {
+        "id": 35,
+        "seed": 20264502,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03378736309744418,
+        "mass": 0.14,
+        "friction": 1.1889198597595094,
+        "start": [
+          -0.19785485199652614,
+          0.06
+        ],
+        "goal": [
+          0.19882162159774455,
+          -0.08
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 11,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0036.json.gz",
+      "sha256": "b11194b343f42e418e9d72424fe308311fdc36a50911b2173cbc7a9ccdb753e7",
+      "bytes": 2573558,
+      "standalone_file": "episode-0036.json.gz"
+    },
+    {
+      "id": 36,
+      "scenario": {
+        "id": 36,
+        "seed": 20264599,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.03429372661970556,
+        "mass": 0.1315909195538253,
+        "friction": 1.2,
+        "start": [
+          -0.1601982544991188,
+          0.1
+        ],
+        "goal": [
+          0.14961842441232875,
+          -0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 12,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0037.json.gz",
+      "sha256": "21f355224ecc3c1f6e4001daedcb54d2c9bcc8aa5a494d08912cda1b45b6235d",
+      "bytes": 638190,
+      "standalone_file": "episode-0037.json.gz"
+    },
+    {
+      "id": 37,
+      "scenario": {
+        "id": 37,
+        "seed": 20264696,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.09801879570512101,
+        "friction": 0.8259913986474277,
+        "start": [
+          -0.16640386239625515,
+          -0.06
+        ],
+        "goal": [
+          0.2072657077945769,
+          0.06
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 13,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0038.json.gz",
+      "sha256": "c45bc4796efcbc7230ede7d2e25760cadc5f56d88cf42dacde4cba7a9a21bf71",
+      "bytes": 660955,
+      "standalone_file": "episode-0038.json.gz"
+    },
+    {
+      "id": 38,
+      "scenario": {
+        "id": 38,
+        "seed": 20264793,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12725222517503426,
+        "friction": 1.2,
+        "start": [
+          -0.21689453275641427,
+          -0.05
+        ],
+        "goal": [
+          0.15499387036776172,
+          0.05
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 14,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0039.json.gz",
+      "sha256": "cdb1805b47345f6a4bc0b1a2b741cb3d9e3775461b624fd58a35dba00f490e35",
+      "bytes": 2574996,
+      "standalone_file": "episode-0039.json.gz"
+    },
+    {
+      "id": 39,
+      "scenario": {
+        "id": 39,
+        "seed": 20264890,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.034961845102347434,
+        "mass": 0.13640544365530144,
+        "friction": 1.2,
+        "start": [
+          -0.17256695144809783,
+          0.1
+        ],
+        "goal": [
+          0.16575955310603604,
+          -0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 15,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0040.json.gz",
+      "sha256": "963c6e4e3e4e1744001f7b77b456c9f581d5b7ee8512e8a7ef96c3fa752cd507",
+      "bytes": 645806,
+      "standalone_file": "episode-0040.json.gz"
+    },
+    {
+      "id": 40,
+      "scenario": {
+        "id": 40,
+        "seed": 20264987,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.033652752391248944,
+        "mass": 0.11258785168845206,
+        "friction": 0.4374907761337235,
+        "start": [
+          -0.2269218944804743,
+          -0.02
+        ],
+        "goal": [
+          0.19514700670726598,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 16,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0041.json.gz",
+      "sha256": "3f3dfbfb2711f52b434a06bb78988b2b78c86f9ef2e0606d53d37cfe9c812dc1",
+      "bytes": 660759,
+      "standalone_file": "episode-0041.json.gz"
+    },
+    {
+      "id": 41,
+      "scenario": {
+        "id": 41,
+        "seed": 20265084,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.1808808847218752,
+        "start": [
+          -0.18323778895661236,
+          0.06
+        ],
+        "goal": [
+          0.20294203608063982,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 17,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0042.json.gz",
+      "sha256": "ac773e979a359400eda1e5865a2c9f7e91d08309c671f21cffe9f0484c09c57b",
+      "bytes": 2572630,
+      "standalone_file": "episode-0042.json.gz"
+    },
+    {
+      "id": 42,
+      "scenario": {
+        "id": 42,
+        "seed": 20265181,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13758348403881265,
+        "friction": 1.18386570071429,
+        "start": [
+          -0.1874975769291632,
+          0.1
+        ],
+        "goal": [
+          0.16043015710311012,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 18,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0043.json.gz",
+      "sha256": "60b731f09bb7c11bef71c2291d29456758411215ce0d31e901ea034ae159959f",
+      "bytes": 638397,
+      "standalone_file": "episode-0043.json.gz"
+    },
+    {
+      "id": 43,
+      "scenario": {
+        "id": 43,
+        "seed": 20265278,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.034419844844937326,
+        "mass": 0.09813096645977348,
+        "friction": 0.8112568019032479,
+        "start": [
+          -0.18092854116111995,
+          -0.06
+        ],
+        "goal": [
+          0.17623006013920534,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 19,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0044.json.gz",
+      "sha256": "038621b4a09824e2576181b8676010911c8b9397599660e15235111db659d1b0",
+      "bytes": 665118,
+      "standalone_file": "episode-0044.json.gz"
+    },
+    {
+      "id": 44,
+      "scenario": {
+        "id": 44,
+        "seed": 20265375,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12868103723274543,
+        "friction": 1.1716493155583738,
+        "start": [
+          -0.1783038560510613,
+          -0.05
+        ],
+        "goal": [
+          0.14049022800987587,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 20,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0045.json.gz",
+      "sha256": "6e221e3cd548b328d41feb206fbaa5c9425e66ce20a673e132ac31cd6cbc5580",
+      "bytes": 2580163,
+      "standalone_file": "episode-0045.json.gz"
+    },
+    {
+      "id": 45,
+      "scenario": {
+        "id": 45,
+        "seed": 20265472,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.03454470361014828,
+        "mass": 0.14,
+        "friction": 1.177150613285601,
+        "start": [
+          -0.18899787708418445,
+          0.1
+        ],
+        "goal": [
+          0.18308753575198355,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 21,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0046.json.gz",
+      "sha256": "26b63b7afd6abbe90596ec9805c323756a2ab7c0fc65f915858c57c9b4f92288",
+      "bytes": 643417,
+      "standalone_file": "episode-0046.json.gz"
+    },
+    {
+      "id": 46,
+      "scenario": {
+        "id": 46,
+        "seed": 20265569,
+        "task": "transfer",
+        "shape": "cylinder",
+        "title": "Pick & place \u00b7 cylinder",
+        "size": 0.02832025488130748,
+        "mass": 0.11936124002616853,
+        "friction": 1.0120424883412198,
+        "start": [
+          -0.16050644626142457,
+          0.07
+        ],
+        "goal": [
+          0.19903588082641366,
+          -0.03
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.93,
+          "lift": 0.21,
+          "lateral": 0.025
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 22,
+          "rationale": "high-clearance heavy puck: arc-contact diversity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0047.json.gz",
+      "sha256": "c41990a5f2b6bee22543f4f4b073ba8b0bc8d81574bc16c7dc56bc69731e34e1",
+      "bytes": 660502,
+      "standalone_file": "episode-0047.json.gz"
+    },
+    {
+      "id": 47,
+      "scenario": {
+        "id": 47,
+        "seed": 20265666,
+        "task": "push",
+        "shape": "cube",
+        "title": "Surface push \u00b7 cube",
+        "size": 0.023817478643432255,
+        "mass": 0.043444818636775025,
+        "friction": 0.4071133119314909,
+        "start": [
+          -0.16308910406194627,
+          -0.09
+        ],
+        "goal": [
+          0.186773405848071,
+          0.1
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.04,
+          "lift": 0.14,
+          "lateral": 0.035
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 23,
+          "rationale": "light slippery prism: long lateral push drift"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0048.json.gz",
+      "sha256": "3c96f7d1aa200742c262c7e91f27ada31565e8eb642aea2d44e06e1eb99bf24e",
+      "bytes": 643635,
+      "standalone_file": "episode-0048.json.gz"
+    },
+    {
+      "id": 48,
+      "scenario": {
+        "id": 48,
+        "seed": 20265763,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.034463110103551305,
+        "mass": 0.038131245157644156,
+        "friction": 0.30225767943821846,
+        "start": [
+          -0.1946221290715039,
+          -0.08
+        ],
+        "goal": [
+          0.19903792283730584,
+          0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 0.9,
+          "lift": 0.13,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 0,
+          "rationale": "small, light, slippery: low-drag flight payload"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0049.json.gz",
+      "sha256": "242fe5f747f455a3fb214c23331b6b8ff93332f28fcfbf2ad097955eaaf94a3a",
+      "bytes": 653716,
+      "standalone_file": "episode-0049.json.gz"
+    },
+    {
+      "id": 49,
+      "scenario": {
+        "id": 49,
+        "seed": 20265860,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03460894319545478,
+        "mass": 0.14,
+        "friction": 1.1863822272866964,
+        "start": [
+          -0.19588917007669807,
+          -0.1
+        ],
+        "goal": [
+          0.20620894459309058,
+          0.03
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.22,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 1,
+          "rationale": "high road-sweep friction; heavy box-winch"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0050.json.gz",
+      "sha256": "6aab9e37617d8b45b3df3bcf44d92787edee87a43192c986c27b9b242764a1d2",
+      "bytes": 654463,
+      "standalone_file": "episode-0050.json.gz"
+    },
+    {
+      "id": 50,
+      "scenario": {
+        "id": 50,
+        "seed": 20265957,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03426890018861741,
+        "mass": 0.040335684053599836,
+        "friction": 0.5681741755809635,
+        "start": [
+          -0.22283826435683296,
+          0.09
+        ],
+        "goal": [
+          0.16780571536393837,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.98,
+          "lift": 0.15,
+          "lateral": 0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 2,
+          "rationale": "pour size mass mapping: release angle sensitivity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0051.json.gz",
+      "sha256": "5a91f001814e475ba1bad937424a205b85dbb9b0f2e7264a366964f21ddfa15b",
+      "bytes": 2573956,
+      "standalone_file": "episode-0051.json.gz"
+    },
+    {
+      "id": 51,
+      "scenario": {
+        "id": 51,
+        "seed": 20266054,
+        "task": "stack",
+        "shape": "sphere",
+        "title": "Stack & balance \u00b7 sphere",
+        "size": 0.03368692827736959,
+        "mass": 0.035,
+        "friction": 0.5504298111209646,
+        "start": [
+          -0.17377834502840414,
+          -0.09
+        ],
+        "goal": [
+          0.1750689583318308,
+          0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.12,
+          "lateral": -0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 3,
+          "rationale": "light wedge pick"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0052.json.gz",
+      "sha256": "40778c0a2ddc9041b2f23bca65b7a44e354c2d8d8f5444527134177af68c2f67",
+      "bytes": 640903,
+      "standalone_file": "episode-0052.json.gz"
+    },
+    {
+      "id": 52,
+      "scenario": {
+        "id": 52,
+        "seed": 20266151,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.10990679942667485,
+        "friction": 0.4645446024276316,
+        "start": [
+          -0.20224566792836413,
+          -0.02
+        ],
+        "goal": [
+          0.15186536811525003,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 4,
+          "rationale": "slippery-heavy pour: particle stream coherence"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0053.json.gz",
+      "sha256": "2a1da274adb96b7cdf3697349fd8d9a46b3dcb6869a4679f242cc814a80d1acd",
+      "bytes": 2577967,
+      "standalone_file": "episode-0053.json.gz"
+    },
+    {
+      "id": 53,
+      "scenario": {
+        "id": 53,
+        "seed": 20266248,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03370763833941892,
+        "mass": 0.14,
+        "friction": 1.1838948174118995,
+        "start": [
+          -0.1951346594467759,
+          0.06
+        ],
+        "goal": [
+          0.15421704350272195,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 5,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0054.json.gz",
+      "sha256": "82b41e27c302ac464689feb1f210bb0a27e3c530d0e4d94ab82cb34852006862",
+      "bytes": 2571908,
+      "standalone_file": "episode-0054.json.gz"
+    },
+    {
+      "id": 54,
+      "scenario": {
+        "id": 54,
+        "seed": 20266345,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13640592690965492,
+        "friction": 1.2,
+        "start": [
+          -0.1949113282794133,
+          0.1
+        ],
+        "goal": [
+          0.18028844166547062,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 6,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0055.json.gz",
+      "sha256": "92134691d81212f93ffe5bb50d05270410351747e1be03efde450ef938d06130",
+      "bytes": 637496,
+      "standalone_file": "episode-0055.json.gz"
+    },
+    {
+      "id": 55,
+      "scenario": {
+        "id": 55,
+        "seed": 20266442,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.034884988615754994,
+        "mass": 0.09846373905641957,
+        "friction": 0.7833468225300312,
+        "start": [
+          -0.17965441781328992,
+          -0.06
+        ],
+        "goal": [
+          0.18091578585561366,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 7,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0056.json.gz",
+      "sha256": "25900eb9f61ff407e52b0e4a81723881ff89a3cc942eef067e85f4ba53824b68",
+      "bytes": 652757,
+      "standalone_file": "episode-0056.json.gz"
+    },
+    {
+      "id": 56,
+      "scenario": {
+        "id": 56,
+        "seed": 20266539,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12273258962202817,
+        "friction": 1.1909233664497731,
+        "start": [
+          -0.21388057978358122,
+          -0.05
+        ],
+        "goal": [
+          0.14692911472870038,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 8,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0057.json.gz",
+      "sha256": "c20674c946250226ab351e916a5d12f85a5eddf9baba0eb4983fe614583363b1",
+      "bytes": 2576086,
+      "standalone_file": "episode-0057.json.gz"
+    },
+    {
+      "id": 57,
+      "scenario": {
+        "id": 57,
+        "seed": 20266636,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.03421808058982715,
+        "mass": 0.13641664466425163,
+        "friction": 1.1978724739551543,
+        "start": [
+          -0.22662194630363958,
+          0.1
+        ],
+        "goal": [
+          0.20254236046690496,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 9,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0058.json.gz",
+      "sha256": "4a3c205262aa1aa04eab8858ef45a3208bcea78b85ac28cd88cb28c7fd817444",
+      "bytes": 638853,
+      "standalone_file": "episode-0058.json.gz"
+    },
+    {
+      "id": 58,
+      "scenario": {
+        "id": 58,
+        "seed": 20266733,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.034334239677712326,
+        "mass": 0.10977426740974187,
+        "friction": 0.44257774866744876,
+        "start": [
+          -0.1646505529829301,
+          -0.02
+        ],
+        "goal": [
+          0.16759781881701202,
+          0.02
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 10,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0059.json.gz",
+      "sha256": "84c7a16e10c682f0968d620124ab461d1164b1e0f9f4512a9ec7618ead0785b8",
+      "bytes": 653878,
+      "standalone_file": "episode-0059.json.gz"
+    },
+    {
+      "id": 59,
+      "scenario": {
+        "id": 59,
+        "seed": 20266830,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03433985514948145,
+        "mass": 0.14,
+        "friction": 1.2,
+        "start": [
+          -0.201636915684212,
+          0.06
+        ],
+        "goal": [
+          0.18839858809486032,
+          -0.08
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 11,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0060.json.gz",
+      "sha256": "8e2a57b7a4c456b9271dbb13cc3cb13b53629f0ce9d0e6df12a083a3a640f9f8",
+      "bytes": 2576642,
+      "standalone_file": "episode-0060.json.gz"
+    },
+    {
+      "id": 60,
+      "scenario": {
+        "id": 60,
+        "seed": 20266927,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.03484264423688874,
+        "mass": 0.14,
+        "friction": 1.1707733226567505,
+        "start": [
+          -0.2211158939241432,
+          0.1
+        ],
+        "goal": [
+          0.18948067052988338,
+          -0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 12,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0061.json.gz",
+      "sha256": "b3af80e7291b518aadc86807cf4d52a4ff40700b858262470f9098c00c5f3d2b",
+      "bytes": 637647,
+      "standalone_file": "episode-0061.json.gz"
+    },
+    {
+      "id": 61,
+      "scenario": {
+        "id": 61,
+        "seed": 20267024,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03453459025649354,
+        "mass": 0.09249866284364834,
+        "friction": 0.7753067748844624,
+        "start": [
+          -0.20688161296537147,
+          -0.06
+        ],
+        "goal": [
+          0.20062059746822344,
+          0.06
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 13,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0062.json.gz",
+      "sha256": "a5891ccd70da7acf425d83ea82a7c77c47fa1ea20667295bbe801997d4907609",
+      "bytes": 652521,
+      "standalone_file": "episode-0062.json.gz"
+    },
+    {
+      "id": 62,
+      "scenario": {
+        "id": 62,
+        "seed": 20267121,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03477299968600273,
+        "mass": 0.12535259547410532,
+        "friction": 1.2,
+        "start": [
+          -0.2108712528925389,
+          -0.05
+        ],
+        "goal": [
+          0.14913992409128696,
+          0.05
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 14,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0063.json.gz",
+      "sha256": "5106ffe8100bf5d7463d3574364bf26f20504c88e93f2eab4fe58e89ca3a8049",
+      "bytes": 2574623,
+      "standalone_file": "episode-0063.json.gz"
+    },
+    {
+      "id": 63,
+      "scenario": {
+        "id": 63,
+        "seed": 20267218,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13950884861437834,
+        "friction": 1.2,
+        "start": [
+          -0.17405696819070726,
+          0.1
+        ],
+        "goal": [
+          0.16542586310766638,
+          -0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 15,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0064.json.gz",
+      "sha256": "290a8f95d90531b56f56b46d0547afa7ee1b0ff5e5efedfa97f6a0e71c186365",
+      "bytes": 648103,
+      "standalone_file": "episode-0064.json.gz"
+    },
+    {
+      "id": 64,
+      "scenario": {
+        "id": 64,
+        "seed": 20267315,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.03471891925344244,
+        "mass": 0.10591633883621543,
+        "friction": 0.44988726533856244,
+        "start": [
+          -0.1721977870212868,
+          -0.02
+        ],
+        "goal": [
+          0.1621876686345786,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 16,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0065.json.gz",
+      "sha256": "41d55b3849329986f8318899477c0d12c0767a5b3d1f15ee1e12415f2249582a",
+      "bytes": 652373,
+      "standalone_file": "episode-0065.json.gz"
+    },
+    {
+      "id": 65,
+      "scenario": {
+        "id": 65,
+        "seed": 20267412,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.2,
+        "start": [
+          -0.19589651759015397,
+          0.06
+        ],
+        "goal": [
+          0.1505634075845592,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 17,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0066.json.gz",
+      "sha256": "a5d1c6990000e26ffffc601e13c702595a333bf5c083e1ada3e8b10b83b4a229",
+      "bytes": 2578283,
+      "standalone_file": "episode-0066.json.gz"
+    },
+    {
+      "id": 66,
+      "scenario": {
+        "id": 66,
+        "seed": 20267509,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.1321901831980029,
+        "friction": 1.1857454802095888,
+        "start": [
+          -0.20450816019205378,
+          0.1
+        ],
+        "goal": [
+          0.165642683361657,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 18,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0067.json.gz",
+      "sha256": "b2e167448eca0f61a7808dcad3ec51f053feeb767feb37d30be0d33e5413016d",
+      "bytes": 638558,
+      "standalone_file": "episode-0067.json.gz"
+    },
+    {
+      "id": 67,
+      "scenario": {
+        "id": 67,
+        "seed": 20267606,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.09333498559826985,
+        "friction": 0.7761719258576631,
+        "start": [
+          -0.2208398665674031,
+          -0.06
+        ],
+        "goal": [
+          0.1436777574988082,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 19,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0068.json.gz",
+      "sha256": "a2a95cfab0d051f7e8ca0730912ab4606e19696f36950f4c61b4e1fa97c136d8",
+      "bytes": 665174,
+      "standalone_file": "episode-0068.json.gz"
+    },
+    {
+      "id": 68,
+      "scenario": {
+        "id": 68,
+        "seed": 20267703,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12095393209252506,
+        "friction": 1.2,
+        "start": [
+          -0.19272746768780052,
+          -0.05
+        ],
+        "goal": [
+          0.15603289181599395,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 20,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0069.json.gz",
+      "sha256": "af49e0994235888fc3c7481311cddc91057cd247b97dcc3757b3174c0d174cc8",
+      "bytes": 2576774,
+      "standalone_file": "episode-0069.json.gz"
+    },
+    {
+      "id": 69,
+      "scenario": {
+        "id": 69,
+        "seed": 20267800,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.2,
+        "start": [
+          -0.20469278055941686,
+          0.1
+        ],
+        "goal": [
+          0.1813284719362855,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 21,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0070.json.gz",
+      "sha256": "a13c971f7a44745cc34cc0827fb908a8d5bf070268d63b8551d410c6f82d3b84",
+      "bytes": 647376,
+      "standalone_file": "episode-0070.json.gz"
+    },
+    {
+      "id": 70,
+      "scenario": {
+        "id": 70,
+        "seed": 20267897,
+        "task": "transfer",
+        "shape": "cylinder",
+        "title": "Pick & place \u00b7 cylinder",
+        "size": 0.02799552498154342,
+        "mass": 0.1156937201009132,
+        "friction": 1.0556955895386637,
+        "start": [
+          -0.22365962815238163,
+          0.07
+        ],
+        "goal": [
+          0.17560392712941394,
+          -0.03
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.93,
+          "lift": 0.21,
+          "lateral": 0.025
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 22,
+          "rationale": "high-clearance heavy puck: arc-contact diversity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0071.json.gz",
+      "sha256": "e827fc5102c5d586bfc7b6c27356d8455e141898871bebad6217259cd0c5193a",
+      "bytes": 660649,
+      "standalone_file": "episode-0071.json.gz"
+    },
+    {
+      "id": 71,
+      "scenario": {
+        "id": 71,
+        "seed": 20267994,
+        "task": "push",
+        "shape": "cube",
+        "title": "Surface push \u00b7 cube",
+        "size": 0.023564078897796572,
+        "mass": 0.04269068644221872,
+        "friction": 0.3866596558317542,
+        "start": [
+          -0.18525536162778736,
+          -0.09
+        ],
+        "goal": [
+          0.20673216457944366,
+          0.1
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.04,
+          "lift": 0.14,
+          "lateral": 0.035
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 23,
+          "rationale": "light slippery prism: long lateral push drift"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0072.json.gz",
+      "sha256": "3cdde4cf4ad401b531bbfbc46eec9e482660e35bd92a06ce04a883e8e1a40075",
+      "bytes": 647472,
+      "standalone_file": "episode-0072.json.gz"
+    },
+    {
+      "id": 72,
+      "scenario": {
+        "id": 72,
+        "seed": 20268091,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.03681982834845781,
+        "friction": 0.3,
+        "start": [
+          -0.19985628727125004,
+          -0.08
+        ],
+        "goal": [
+          0.189008488021791,
+          0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 0.9,
+          "lift": 0.13,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 0,
+          "rationale": "small, light, slippery: low-drag flight payload"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0073.json.gz",
+      "sha256": "3d0bc6e523c83c6223489093499588e89049cec434635fa19de6de8df8fdbcfc",
+      "bytes": 652595,
+      "standalone_file": "episode-0073.json.gz"
+    },
+    {
+      "id": 73,
+      "scenario": {
+        "id": 73,
+        "seed": 20268188,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.1381048994764686,
+        "friction": 1.1729115686416625,
+        "start": [
+          -0.16906297031324358,
+          -0.1
+        ],
+        "goal": [
+          0.17650817025220022,
+          0.03
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.22,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 1,
+          "rationale": "high road-sweep friction; heavy box-winch"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0074.json.gz",
+      "sha256": "ea75a7c72c9803f18648d9f8a2ae303beda83f2aa7f7febaadb630caaa89212e",
+      "bytes": 665111,
+      "standalone_file": "episode-0074.json.gz"
+    },
+    {
+      "id": 74,
+      "scenario": {
+        "id": 74,
+        "seed": 20268285,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.041197469007968904,
+        "friction": 0.5334133753981442,
+        "start": [
+          -0.1901438002823852,
+          0.09
+        ],
+        "goal": [
+          0.18762757539749148,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.98,
+          "lift": 0.15,
+          "lateral": 0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 2,
+          "rationale": "pour size mass mapping: release angle sensitivity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0075.json.gz",
+      "sha256": "96842153e322bc348d24e0ae40a2c7dff8c9a843d085c34b4bc947633d4a2b90",
+      "bytes": 2571625,
+      "standalone_file": "episode-0075.json.gz"
+    },
+    {
+      "id": 75,
+      "scenario": {
+        "id": 75,
+        "seed": 20268382,
+        "task": "stack",
+        "shape": "sphere",
+        "title": "Stack & balance \u00b7 sphere",
+        "size": 0.034459784886892886,
+        "mass": 0.03594333728579805,
+        "friction": 0.5549604602800682,
+        "start": [
+          -0.2156321849487722,
+          -0.09
+        ],
+        "goal": [
+          0.1747511863242835,
+          0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.12,
+          "lateral": -0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 3,
+          "rationale": "light wedge pick"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0076.json.gz",
+      "sha256": "08377f53df44d68f8efe73567ed3edfaf670ee3f061eb2f1d315c6bea8303c9e",
+      "bytes": 635807,
+      "standalone_file": "episode-0076.json.gz"
+    },
+    {
+      "id": 76,
+      "scenario": {
+        "id": 76,
+        "seed": 20268479,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03413821664694697,
+        "mass": 0.10727654692549259,
+        "friction": 0.45050066320504994,
+        "start": [
+          -0.16666649996303023,
+          -0.02
+        ],
+        "goal": [
+          0.1428605611389503,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 4,
+          "rationale": "slippery-heavy pour: particle stream coherence"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0077.json.gz",
+      "sha256": "a3cf7cf7498758946729a81954cbdfb1f666851730a77b086146b51d72121356",
+      "bytes": 2571153,
+      "standalone_file": "episode-0077.json.gz"
+    },
+    {
+      "id": 77,
+      "scenario": {
+        "id": 77,
+        "seed": 20268576,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.1612059010490774,
+        "start": [
+          -0.21920602128608152,
+          0.06
+        ],
+        "goal": [
+          0.20639288876671347,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 5,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0078.json.gz",
+      "sha256": "8243f8b765e62ebd53b76695884d4168a66b55e3118116db37d35f0aac56353c",
+      "bytes": 2573084,
+      "standalone_file": "episode-0078.json.gz"
+    },
+    {
+      "id": 78,
+      "scenario": {
+        "id": 78,
+        "seed": 20268673,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.034623473222553734,
+        "mass": 0.13681199603701288,
+        "friction": 1.2,
+        "start": [
+          -0.22696173483971507,
+          0.1
+        ],
+        "goal": [
+          0.19758061055559667,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 6,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0079.json.gz",
+      "sha256": "006d066df305fa34b91dc58cc0d91ef579532dadc14e998c1b9d9835a8855ba5",
+      "bytes": 637843,
+      "standalone_file": "episode-0079.json.gz"
+    },
+    {
+      "id": 79,
+      "scenario": {
+        "id": 79,
+        "seed": 20268770,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.033751020544394855,
+        "mass": 0.09598022709703072,
+        "friction": 0.7695604127794504,
+        "start": [
+          -0.18244452031096445,
+          -0.06
+        ],
+        "goal": [
+          0.1800677990075201,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 7,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0080.json.gz",
+      "sha256": "37f276319d3844d017d6372f07849d52c776d7de1d216967ac0ff18f63157021",
+      "bytes": 654055,
+      "standalone_file": "episode-0080.json.gz"
+    },
+    {
+      "id": 80,
+      "scenario": {
+        "id": 80,
+        "seed": 20268867,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12302926983917131,
+        "friction": 1.2,
+        "start": [
+          -0.17986571560380982,
+          -0.05
+        ],
+        "goal": [
+          0.15126260625431315,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 8,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0081.json.gz",
+      "sha256": "1e13902b8f19a161a39cb69fb846aac2145718aa023b1b54f311ef045fa934c6",
+      "bytes": 2577157,
+      "standalone_file": "episode-0081.json.gz"
+    },
+    {
+      "id": 81,
+      "scenario": {
+        "id": 81,
+        "seed": 20268964,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.13646016499053124,
+        "friction": 1.1691301319673657,
+        "start": [
+          -0.16496500531909988,
+          0.1
+        ],
+        "goal": [
+          0.2026830282411538,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 9,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0082.json.gz",
+      "sha256": "5bb8c405b85e4f660927b3c133440279fd690e76dae2a63bc93e152607948751",
+      "bytes": 643516,
+      "standalone_file": "episode-0082.json.gz"
+    },
+    {
+      "id": 82,
+      "scenario": {
+        "id": 82,
+        "seed": 20269061,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.10984265342708677,
+        "friction": 0.4452518972503021,
+        "start": [
+          -0.20772686946671456,
+          -0.02
+        ],
+        "goal": [
+          0.18942636623512954,
+          0.02
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 10,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0083.json.gz",
+      "sha256": "f9a5efa221300932dbaf679e01c8eb522eb4307492dc934a15da9e09c903d87d",
+      "bytes": 649046,
+      "standalone_file": "episode-0083.json.gz"
+    },
+    {
+      "id": 83,
+      "scenario": {
+        "id": 83,
+        "seed": 20269158,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.03495037920735777,
+        "mass": 0.14,
+        "friction": 1.165992116756737,
+        "start": [
+          -0.17296529615530745,
+          0.06
+        ],
+        "goal": [
+          0.18922134124208242,
+          -0.08
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 11,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0084.json.gz",
+      "sha256": "960b9949c1e07c62140212a9e318cc38108d81ba669ee5dd809c498fa45dfe9e",
+      "bytes": 2578331,
+      "standalone_file": "episode-0084.json.gz"
+    },
+    {
+      "id": 84,
+      "scenario": {
+        "id": 84,
+        "seed": 20269255,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.03379018057929352,
+        "mass": 0.13634263598041174,
+        "friction": 1.2,
+        "start": [
+          -0.2081178765045479,
+          0.1
+        ],
+        "goal": [
+          0.14183975389460102,
+          -0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 12,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0085.json.gz",
+      "sha256": "d44de580505c70c599d98b2a55d947b69f6ec5ed3b4b99c72e353d7055a28398",
+      "bytes": 637899,
+      "standalone_file": "episode-0085.json.gz"
+    },
+    {
+      "id": 85,
+      "scenario": {
+        "id": 85,
+        "seed": 20269352,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.09480014858804643,
+        "friction": 0.7844280533790589,
+        "start": [
+          -0.17639463677303865,
+          -0.06
+        ],
+        "goal": [
+          0.17334403272485363,
+          0.06
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 13,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0086.json.gz",
+      "sha256": "bb37b4e5e3977aa1393b620c25d2cbb79f0b3652cf507959a8da70d5adfb24b4",
+      "bytes": 656207,
+      "standalone_file": "episode-0086.json.gz"
+    },
+    {
+      "id": 86,
+      "scenario": {
+        "id": 86,
+        "seed": 20269449,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12507206650450825,
+        "friction": 1.186461151510477,
+        "start": [
+          -0.18966033678501845,
+          -0.05
+        ],
+        "goal": [
+          0.168716831789352,
+          0.05
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 14,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0087.json.gz",
+      "sha256": "19b87d97529e9a413f21b445764621c5454717f71935bc51243ce2529ac2e7a7",
+      "bytes": 2571306,
+      "standalone_file": "episode-0087.json.gz"
+    },
+    {
+      "id": 87,
+      "scenario": {
+        "id": 87,
+        "seed": 20269546,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.033832006582617764,
+        "mass": 0.13359512620388644,
+        "friction": 1.1983277978003024,
+        "start": [
+          -0.18184010029304773,
+          0.1
+        ],
+        "goal": [
+          0.1740630107256584,
+          -0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 15,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0088.json.gz",
+      "sha256": "92a40ea60d2ba6530ed8951e559ef8c4a0ce20c3ab5f00dc2d0ece60e63f97a7",
+      "bytes": 643724,
+      "standalone_file": "episode-0088.json.gz"
+    },
+    {
+      "id": 88,
+      "scenario": {
+        "id": 88,
+        "seed": 20269643,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.10657142901513725,
+        "friction": 0.4341749951681122,
+        "start": [
+          -0.17344291833229364,
+          -0.02
+        ],
+        "goal": [
+          0.18009666320169346,
+          0.02
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.18,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 16,
+          "rationale": "heavy-slippery push: overshoot carrier"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0089.json.gz",
+      "sha256": "35aaa74e37091915966e54dfad25da53fa99b8521233fb8dce347eb5eabf8ffb",
+      "bytes": 656490,
+      "standalone_file": "episode-0089.json.gz"
+    },
+    {
+      "id": 89,
+      "scenario": {
+        "id": 89,
+        "seed": 20269740,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.1856669970080256,
+        "start": [
+          -0.1866529114637524,
+          0.06
+        ],
+        "goal": [
+          0.18452303554164248,
+          -0.08
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 17,
+          "rationale": "heaviest max-grip pour stream"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0090.json.gz",
+      "sha256": "c0d3ed1fbd5959a7c8ebc8ee9202943583d0a072ceacbf966b717ec49f81e469",
+      "bytes": 2571236,
+      "standalone_file": "episode-0090.json.gz"
+    },
+    {
+      "id": 90,
+      "scenario": {
+        "id": 90,
+        "seed": 20269837,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.03438108031256125,
+        "mass": 0.13488376867281246,
+        "friction": 1.169391000330448,
+        "start": [
+          -0.20265482583548874,
+          0.1
+        ],
+        "goal": [
+          0.16573910713195802,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 18,
+          "rationale": "heavy max-grip: stable transfer"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0091.json.gz",
+      "sha256": "d3a70439a57515ae09c46a4bac5617c0c58a4498888f7eec9f45a5947671de27",
+      "bytes": 634800,
+      "standalone_file": "episode-0091.json.gz"
+    },
+    {
+      "id": 91,
+      "scenario": {
+        "id": 91,
+        "seed": 20269934,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.09807267822381109,
+        "friction": 0.7953525726795196,
+        "start": [
+          -0.16822940559592098,
+          -0.06
+        ],
+        "goal": [
+          0.1474949982878752,
+          0.06
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.06,
+          "lift": 0.13,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 19,
+          "rationale": "heavy-mid grip: push yaw on curve"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0092.json.gz",
+      "sha256": "9e511eae0342f47d7c4e2632b58fd9b46b26513df9a997ac3ba2c4b5637af464",
+      "bytes": 665061,
+      "standalone_file": "episode-0092.json.gz"
+    },
+    {
+      "id": 92,
+      "scenario": {
+        "id": 92,
+        "seed": 20270031,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.035,
+        "mass": 0.12353656736202538,
+        "friction": 1.1720239209607242,
+        "start": [
+          -0.21007285200990738,
+          -0.05
+        ],
+        "goal": [
+          0.14331617527874188,
+          0.05
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.16,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 20,
+          "rationale": "heavy high-grip: pour width sweep"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0093.json.gz",
+      "sha256": "33da8f5e7384c548127b2f315fd2b803fd5eb9828413e3a488ebf9ea4ffe6a9f",
+      "bytes": 2574674,
+      "standalone_file": "episode-0093.json.gz"
+    },
+    {
+      "id": 93,
+      "scenario": {
+        "id": 93,
+        "seed": 20270128,
+        "task": "stack",
+        "shape": "cube",
+        "title": "Stack & balance \u00b7 cube",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.1868044949844478,
+        "start": [
+          -0.21096914403373376,
+          0.1
+        ],
+        "goal": [
+          0.19751460829982537,
+          -0.09
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.2011,
+          "lateral": 0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 21,
+          "rationale": "easy stack: heavy block cushions sway"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0094.json.gz",
+      "sha256": "df23e156ee3f9401fd8d94f5feb9ab4222f75f8450ddb661935ece43fe3b7639",
+      "bytes": 643303,
+      "standalone_file": "episode-0094.json.gz"
+    },
+    {
+      "id": 94,
+      "scenario": {
+        "id": 94,
+        "seed": 20270225,
+        "task": "transfer",
+        "shape": "cylinder",
+        "title": "Pick & place \u00b7 cylinder",
+        "size": 0.027255898275598885,
+        "mass": 0.11956212064260617,
+        "friction": 1.0455448849881068,
+        "start": [
+          -0.19375335688935594,
+          0.07
+        ],
+        "goal": [
+          0.19026524980319665,
+          -0.03
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.93,
+          "lift": 0.21,
+          "lateral": 0.025
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 22,
+          "rationale": "high-clearance heavy puck: arc-contact diversity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0095.json.gz",
+      "sha256": "8ea759ae6ab276322000f5e5b84eaa2eb4768c6e7f370ab7e6dc70b62b0c86e8",
+      "bytes": 662034,
+      "standalone_file": "episode-0095.json.gz"
+    },
+    {
+      "id": 95,
+      "scenario": {
+        "id": 95,
+        "seed": 20270322,
+        "task": "push",
+        "shape": "cube",
+        "title": "Surface push \u00b7 cube",
+        "size": 0.022934337798953056,
+        "mass": 0.042511998260132966,
+        "friction": 0.38504745982587335,
+        "start": [
+          -0.16482983670197426,
+          -0.09
+        ],
+        "goal": [
+          0.16830000003101306,
+          0.1
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.04,
+          "lift": 0.14,
+          "lateral": 0.035
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 23,
+          "rationale": "light slippery prism: long lateral push drift"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0096.json.gz",
+      "sha256": "17f41134a3c1ca28cdffb31e2a1897c6e8638621fde1abbc16c1cf7a9fadb629",
+      "bytes": 653514,
+      "standalone_file": "episode-0096.json.gz"
+    },
+    {
+      "id": 96,
+      "scenario": {
+        "id": 96,
+        "seed": 20270419,
+        "task": "transfer",
+        "shape": "cube",
+        "title": "Pick & place \u00b7 cube",
+        "size": 0.03492986399093643,
+        "mass": 0.03865998007170856,
+        "friction": 0.30798927661590275,
+        "start": [
+          -0.20035676661878826,
+          -0.08
+        ],
+        "goal": [
+          0.19604705755598845,
+          0.09
+        ],
+        "color": "#bf896e",
+        "motion": {
+          "speed": 0.9,
+          "lift": 0.13,
+          "lateral": -0.03
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 0,
+          "rationale": "small, light, slippery: low-drag flight payload"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0097.json.gz",
+      "sha256": "4a76e511361c47f58033dc1040c57ea4fc7682ecfdc64649cbc47e4195669178",
+      "bytes": 654063,
+      "standalone_file": "episode-0097.json.gz"
+    },
+    {
+      "id": 97,
+      "scenario": {
+        "id": 97,
+        "seed": 20270516,
+        "task": "push",
+        "shape": "cylinder",
+        "title": "Surface push \u00b7 cylinder",
+        "size": 0.035,
+        "mass": 0.14,
+        "friction": 1.1779264060780406,
+        "start": [
+          -0.16159879815764727,
+          -0.1
+        ],
+        "goal": [
+          0.15597045049304145,
+          0.03
+        ],
+        "color": "#a2af87",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.22,
+          "lateral": -0.04
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 1,
+          "rationale": "high road-sweep friction; heavy box-winch"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0098.json.gz",
+      "sha256": "d8630c07c3dd06e35870506ae1e3281f5c3fcc9ff31d6f202807ac1ab041d46a",
+      "bytes": 657385,
+      "standalone_file": "episode-0098.json.gz"
+    },
+    {
+      "id": 98,
+      "scenario": {
+        "id": 98,
+        "seed": 20270613,
+        "task": "pour",
+        "shape": "sphere",
+        "title": "Pour into receiving cup",
+        "size": 0.034661593970377,
+        "mass": 0.039124963726848365,
+        "friction": 0.5432368066031487,
+        "start": [
+          -0.19016044650692493,
+          0.09
+        ],
+        "goal": [
+          0.17241764849051835,
+          -0.09
+        ],
+        "color": "#8ba9ba",
+        "motion": {
+          "speed": 0.98,
+          "lift": 0.15,
+          "lateral": 0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 2,
+          "rationale": "pour size mass mapping: release angle sensitivity"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0099.json.gz",
+      "sha256": "d538200e1ca85263430c282bde6cf5cec675ee3b3d287d3a5504b532b800033f",
+      "bytes": 2573804,
+      "standalone_file": "episode-0099.json.gz"
+    },
+    {
+      "id": 99,
+      "scenario": {
+        "id": 99,
+        "seed": 20270710,
+        "task": "stack",
+        "shape": "sphere",
+        "title": "Stack & balance \u00b7 sphere",
+        "size": 0.033642245185095815,
+        "mass": 0.035,
+        "friction": 0.5617323217531666,
+        "start": [
+          -0.17567715296987446,
+          -0.09
+        ],
+        "goal": [
+          0.18544120735256003,
+          0.09
+        ],
+        "color": "#c4ab75",
+        "motion": {
+          "speed": 1.08,
+          "lift": 0.12,
+          "lateral": -0.01
+        },
+        "proposal": {
+          "planId": "3d1546db-a0cf-4b20-8637-d2ed7d3f4e89",
+          "model": "muse-wonder-1.0",
+          "variant": 3,
+          "rationale": "light wedge pick"
+        }
+      },
+      "frames": 361,
+      "file": "compact/episode-0100.json.gz",
+      "sha256": "d13566b2e1ffe5291ee42e7b2f27a562f3060876b928f2ff85aff43b9e49e073",
+      "bytes": 638409,
+      "standalone_file": "episode-0100.json.gz"
+    }
+  ],
+  "meshes": {
+    "93b8f59b9ba8c6f25296958a8a8ae2298f5b702975c343a8317c559297ffdee6": {
+      "file": "meshes/93b8f59b9ba8c6f25296958a8a8ae2298f5b702975c343a8317c559297ffdee6.json.gz",
+      "sha256": "93b8f59b9ba8c6f25296958a8a8ae2298f5b702975c343a8317c559297ffdee6",
+      "bytes": 1495344
+    },
+    "2f1c8c7f4d5f3cf267987b39d891d55cdec942d9342b5a3e7b4201e77d6b8b84": {
+      "file": "meshes/2f1c8c7f4d5f3cf267987b39d891d55cdec942d9342b5a3e7b4201e77d6b8b84.json.gz",
+      "sha256": "2f1c8c7f4d5f3cf267987b39d891d55cdec942d9342b5a3e7b4201e77d6b8b84",
+      "bytes": 566239
+    },
+    "59c81125d1387a4fe017b893b85d3f697c0ec9fa5fab4500f34ab33e0b715e5a": {
+      "file": "meshes/59c81125d1387a4fe017b893b85d3f697c0ec9fa5fab4500f34ab33e0b715e5a.json.gz",
+      "sha256": "59c81125d1387a4fe017b893b85d3f697c0ec9fa5fab4500f34ab33e0b715e5a",
+      "bytes": 363828
+    },
+    "49e9fa7dac6c4837d96d53ff21a56d9c6123a43088475ec4452e8b7ccd27d42d": {
+      "file": "meshes/49e9fa7dac6c4837d96d53ff21a56d9c6123a43088475ec4452e8b7ccd27d42d.json.gz",
+      "sha256": "49e9fa7dac6c4837d96d53ff21a56d9c6123a43088475ec4452e8b7ccd27d42d",
+      "bytes": 535899
+    },
+    "86797320620a5fb42831fb560fd24fbd3fdf5bf8bd9164e416d69ffe18e5a35a": {
+      "file": "meshes/86797320620a5fb42831fb560fd24fbd3fdf5bf8bd9164e416d69ffe18e5a35a.json.gz",
+      "sha256": "86797320620a5fb42831fb560fd24fbd3fdf5bf8bd9164e416d69ffe18e5a35a",
+      "bytes": 183431
+    },
+    "737ad57a6ffeab77e29aad9001cc1c26efc8829a9ba066c5015b719dc5460d2d": {
+      "file": "meshes/737ad57a6ffeab77e29aad9001cc1c26efc8829a9ba066c5015b719dc5460d2d.json.gz",
+      "sha256": "737ad57a6ffeab77e29aad9001cc1c26efc8829a9ba066c5015b719dc5460d2d",
+      "bytes": 1952
+    },
+    "389f442912aeed9d6c5d8c52071bddc5b386118f62bfee8e487e70da9f1c6a11": {
+      "file": "meshes/389f442912aeed9d6c5d8c52071bddc5b386118f62bfee8e487e70da9f1c6a11.json.gz",
+      "sha256": "389f442912aeed9d6c5d8c52071bddc5b386118f62bfee8e487e70da9f1c6a11",
+      "bytes": 146194
+    },
+    "d35bf7c470f0fd1d9ca4d1d6c993f5b5f6f4f00ef2f82cbc11ce75c966719fee": {
+      "file": "meshes/d35bf7c470f0fd1d9ca4d1d6c993f5b5f6f4f00ef2f82cbc11ce75c966719fee.json.gz",
+      "sha256": "d35bf7c470f0fd1d9ca4d1d6c993f5b5f6f4f00ef2f82cbc11ce75c966719fee",
+      "bytes": 505149
+    },
+    "a6d3437d1485e1382bbb65fb70d653dfcebfaecf848f2d36fc47e1d306e7f9ed": {
+      "file": "meshes/a6d3437d1485e1382bbb65fb70d653dfcebfaecf848f2d36fc47e1d306e7f9ed.json.gz",
+      "sha256": "a6d3437d1485e1382bbb65fb70d653dfcebfaecf848f2d36fc47e1d306e7f9ed",
+      "bytes": 381503
+    },
+    "4bd6992b59d646c77091d111975cf15a906f7dbde268c7e64204605eff003001": {
+      "file": "meshes/4bd6992b59d646c77091d111975cf15a906f7dbde268c7e64204605eff003001.json.gz",
+      "sha256": "4bd6992b59d646c77091d111975cf15a906f7dbde268c7e64204605eff003001",
+      "bytes": 1937
+    }
+  },
+  "bytes": 132686149,
+  "standalone_bytes": 1077069342,
+  "base_url": "https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation/resolve/c8d71416e9d4a798950e11a3b3a94a9b8264f3a6/tabletop/",
+  "revision": "c8d71416e9d4a798950e11a3b3a94a9b8264f3a6"
+}
