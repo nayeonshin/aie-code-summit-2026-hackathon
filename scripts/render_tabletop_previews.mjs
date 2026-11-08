@@ -4,6 +4,7 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
+import { verifyPreviewIdentity } from './tabletop_preview_identity.mjs';
 const url = process.argv.find(arg => arg.startsWith('--url='))?.slice(6) ?? 'https://hand-studio.hidden-pond-5e6a.workers.dev';
 const inventory = JSON.parse(readFileSync('config/tabletop-recordings.json'));
 const approved = join(tmpdir(), 'opencode'); mkdirSync(approved, { recursive: true });
@@ -22,7 +23,8 @@ try {
     assert.equal(await page.locator('[role=alert]').count(), 0);
     if (await page.getByLabel('Pause tabletop playback').count()) await page.getByLabel('Pause tabletop playback').click();
     await page.getByRole('button', { name: 'Data & AI', exact: true }).click();
-    assert.match(await page.locator('.data-selected').innerText(), /Published recording; no physics recomputation/);
+    const identity = await page.locator('.data-selected').innerText();
+    verifyPreviewIdentity(identity, inventory, entry);
     await page.getByLabel('Close data explorer').click();
     const frames = [];
     for (let index = 0; index <= 360; index += 3) {

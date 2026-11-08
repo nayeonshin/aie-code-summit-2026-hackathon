@@ -38,8 +38,11 @@ def atomic_write(path, data):
 def compact_episode(job):
     source, output, study = job
     source, output = Path(source), Path(output)
-    with gzip.open(source / 'tabletop' / study['file'], 'rt', encoding='utf-8') as stream:
-        episode = json.load(stream)
+    data = (source / 'tabletop' / study['file']).read_bytes()
+    if ('bytes' in study and len(data) != study['bytes'] or
+            'sha256' in study and digest(data) != study['sha256']):
+        raise ValueError('Standalone source checksum or size mismatch')
+    episode = json.loads(gzip.decompress(data))
     geometry = {}
     for geom in episode['geoms']:
         if 'mesh' not in geom:
@@ -54,7 +57,9 @@ def compact_episode(job):
         geom['mesh'] = sha
     compact = {'schema_version': 1, **episode}
     data = gzip.compress(encode(compact), mtime=0)
-    filename = f'compact/{study["file"]}'
+    # Immutable payloads keep both the old and new indexes restorable, even if
+    # conversion or validation fails before the final atomic index replacement.
+    filename = f'compact/{digest(data)}.json.gz'
     atomic_write(output / 'tabletop' / filename, data)
     return {
         'id': study['id'], 'scenario': episode['scenario'], 'frames': len(episode['frames']),

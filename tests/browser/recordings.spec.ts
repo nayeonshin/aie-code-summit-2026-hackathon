@@ -78,23 +78,38 @@ test('recorded grid plays multiple stored episodes without initializing physics'
   expect(physicsReads).toBe(0);
 });
 
-test('a failed old download does not discard a newer selected recording', async ({ page }) => {
-  const { files, manifest } = fixture(); let requested = false, release!: () => void;
+test('new selection completes while the obsolete recording request is still stalled', async ({ page }) => {
+  const { files, manifest } = fixture(); let requested = false, nextRequested = false, release!: () => void;
   const blocked = new Promise<void>(resolve => { release = resolve; });
   await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
   await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
   await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ json: manifest }));
   await page.route('**/fixtures/tabletop/**', async route => {
     const key = new URL(route.request().url()).pathname.replace('/fixtures/tabletop/', '');
-    if (key === manifest.episodes[0].file) { requested = true; await blocked; return route.fulfill({ body: Buffer.from('corrupt') }); }
+    if (key === manifest.episodes[0].file) { requested = true; await blocked; return route.fulfill({ body: Buffer.from('corrupt') }).catch(() => {}); }
+    if (key === manifest.episodes[1].file) nextRequested = true;
     return route.fulfill({ body: files.get(key)!, contentType: 'application/gzip' });
   });
   await page.goto('/');
   await expect.poll(() => requested).toBe(true);
-  await page.getByLabel('Next simulation', { exact: true }).click(); release();
-  await expect(page.getByLabel('Selected episode', { exact: true })).toHaveText('2');
-  await expect(page.locator('.tt-loading')).toHaveCount(0);
-  await expect(page.locator('[role=alert]')).toHaveCount(0);
+  try {
+    await page.getByLabel('Next simulation', { exact: true }).click();
+    await expect.poll(() => nextRequested).toBe(true);
+    await expect(page.getByLabel('Selected episode', { exact: true })).toHaveText('2');
+    await expect(page.locator('.tt-loading')).toHaveCount(0);
+    await expect(page.locator('[role=alert]')).toHaveCount(0);
+  } finally { release(); }
+});
+
+test('HTML inventory outage is surfaced without physics recomputation', async ({ page }) => {
+  let physicsReads = 0;
+  await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ status: 404 }));
+  await page.route('**/data/tabletop-plan.json', route => route.fulfill({ status: 404 }));
+  await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ status: 503, contentType: 'text/html', body: '<h1>Unavailable</h1>' }));
+  await page.route('**/model/**', route => { physicsReads++; return route.abort(); });
+  await page.goto('/');
+  await expect(page.getByRole('alert')).toContainText('inventory unavailable (HTTP 503)');
+  expect(physicsReads).toBe(0);
 });
 
 test('styled dropdowns support keyboard selection, Escape and mobile layout', async ({ page }) => {

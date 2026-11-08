@@ -15,13 +15,24 @@
 - Published and byte-verified the four GIFs and visual dataset card at Hugging Face commit `29bce2f0ed4b243dcd314e74b4a9295737ea7aac`. Replay remains pinned to the original compact-data commit; a documentation-only update does not change recorded data identity.
 - Replaced native task/view-count/speed selects with styled, keyboard-accessible dropdowns.
 
+## PR #4 review fixes
+
+- Development replay now uses an exact pinned-file GET allowlist and constructs fresh public headers before the localhost-to-Worker hop. Cookies, authorization, custom tokens and upstream cookies are not forwarded; queries and other methods are rejected locally.
+- Conversion verifies indexed standalone compressed sizes/checksums when present. New compact trajectories use immutable SHA-256 filenames, so interrupted rebuilds leave the previous index and all its payloads usable. The loader retains compatibility with the already-published episode filenames; the pinned dataset is unchanged.
+- Inventory outages (including HTML 503 responses) surface errors rather than silently computing published studies. Only 404, or successful HTML in Vite development, means an absent inventory.
+- New selections cancel obsolete trajectory downloads/retry waits. Cancelled consumers detach from shared mesh promises without cancelling reusable geometry; stale results/errors are discarded.
+- Preview capture checks the app's displayed dataset revision and trajectory checksum against the local inventory before taking any frames. Mismatched attribution aborts capture.
+
 ## Validation
 
-- `python -m pytest -q`: 35 tests passed.
-- `PLAYWRIGHT_CHROME=1 npm run test:e2e -- --workers=3`: **14 tests passed**, including recorded-playback/recovery checks, a 25-view on-demand grid and styled-dropdown keyboard/mobile coverage. Three workers bound concurrent real-MuJoCo/GPU resource use; a five-worker stress run encountered a Chrome context-startup timeout before test execution.
-- WebKit recorded replay/dropdown suite: **5 tests passed**, including pointer focus and Escape dismissal.
+- `python -m pytest -q`: **41 tests passed**, including indexed source corruption and interrupted rebuild regressions.
+- `PLAYWRIGHT_CHROME=1 npm run test:e2e -- tests/browser/{tabletop,grid,recovery,studio,recordings}.spec.ts --workers=2`: **15 tests passed**, including stalled-selection cancellation, inventory outages, a 25-view on-demand grid and keyboard/mobile coverage. A three-worker run passed 14 tests but timed out creating one Chrome context before test execution; the complete two-worker rerun passed.
+- WebKit recorded replay/dropdown suite: **6 tests passed**, including stalled-selection cancellation and inventory outages.
 - `npm run test:recordings`: all 100 exact browser-loader round trips; 10 shared mesh downloads; mismatched-scenario exclusion and corrupt-download recovery passed.
 - `npm run test:recording-proxy`: fixed revision/file allowlist, credential stripping, checksum rejection and immutable cache passed without external requests.
+- `npm run test:dev-recording-proxy`: actual Vite-to-upstream credential/header filtering and method/path/revision/query restrictions passed against a local HTTP server.
+- `npm run test:recording-review`: production/development inventory fallback policy, immutable filenames and preview identity mismatch rejection passed.
+- `npm run test:assets`, `npm run test:cloud`, and `npm run build:cloud`: passed.
 
 ## Reproduce the visuals
 
@@ -32,7 +43,7 @@ python -m pip install Pillow
 python scripts/encode_tabletop_previews.py /path/to/capture.json
 ```
 
-The capture step blocks model downloads and checks published playback attribution; it scrubs actual 30 Hz recorded frames at every third frame. GIFs are 640×480, 10 Hz documentation previews. Their display color quantization does not change the underlying dataset. Captured PNGs remain outside Git; only the four small GIFs and public provenance metadata are committed/published.
+The capture step blocks model downloads and verifies the displayed revision and trajectory SHA-256 against the local inventory; it scrubs actual 30 Hz recorded frames at every third frame. GIFs are 640×480, 10 Hz documentation previews. Their display color quantization does not change the underlying dataset. Captured PNGs remain outside Git; only the four small GIFs and public provenance metadata are committed/published.
 
 ## Next campaign gate
 

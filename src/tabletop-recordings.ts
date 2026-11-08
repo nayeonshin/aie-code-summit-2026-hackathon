@@ -1,4 +1,4 @@
-import { fetchAsset } from './asset-fetch';
+import { fetchAsset, withAbort } from './asset-fetch';
 import type { Scenario } from './tabletop-scenarios';
 import type { TableEpisode, TableGeom } from './tabletop-physics';
 
@@ -21,14 +21,14 @@ export function validateRecordingManifest(value: any): RecordingManifest {
   for (const entry of value.episodes) {
     check(Number.isInteger(entry.id) && entry.id >= 0 && entry.id < value.planned && entry.scenario?.id === entry.id && entry.frames === 361, 'Invalid recorded scenario');
     check(!ids.has(entry.id) && !files.has(entry.file), 'Duplicate recording ID or filename'); ids.add(entry.id); files.add(entry.file);
-    check(entry.file === `compact/episode-${String(entry.id + 1).padStart(4, '0')}.json.gz` && hashPattern.test(entry.sha256) && Number.isInteger(entry.bytes) && entry.bytes > 0 && entry.bytes <= 16 * 1024 * 1024, 'Invalid recorded trajectory descriptor');
+    check((entry.file === `compact/episode-${String(entry.id + 1).padStart(4, '0')}.json.gz` || entry.file === `compact/${entry.sha256}.json.gz`) && hashPattern.test(entry.sha256) && Number.isInteger(entry.bytes) && entry.bytes > 0 && entry.bytes <= 16 * 1024 * 1024, 'Invalid recorded trajectory descriptor');
   }
   for (const [hash, file] of Object.entries(value.meshes) as [string, File][]) check(hashPattern.test(hash) && file.sha256 === hash && file.file === `meshes/${hash}.json.gz` && Number.isInteger(file.bytes) && file.bytes > 0 && file.bytes <= 16 * 1024 * 1024, 'Invalid shared mesh descriptor');
   return value;
 }
 
-async function verifiedJSON(base: string, file: File) {
-  const bytes = await fetchAsset(base + file.file, 'Published recording');
+async function verifiedJSON(base: string, file: File, signal?: AbortSignal) {
+  const bytes = await fetchAsset(base + file.file, 'Published recording', signal);
   const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(n => n.toString(16).padStart(2, '0')).join('');
   check(bytes.length === file.bytes && hash === file.sha256, 'Published recording checksum mismatch; no computed substitute was used');
   const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
@@ -58,8 +58,9 @@ export class TabletopRecordings {
   }
   static async open() {
     const response = await fetch('/data/tabletop-recordings.json', { signal: AbortSignal.timeout(10000) });
-    if (response.status === 404 || response.headers.get('content-type')?.includes('text/html')) return null; // Vite's missing-static-file fallback.
+    if (response.status === 404) return null;
     check(response.ok, `Published recording inventory unavailable (HTTP ${response.status})`);
+    if (import.meta.env.DEV && response.headers.get('content-type')?.includes('text/html')) return null; // Only Vite's successful missing-static-file fallback.
     return new TabletopRecordings(validateRecordingManifest(await response.json()));
   }
   private mesh(hash: string) {
@@ -72,17 +73,18 @@ export class TabletopRecordings {
     }
     return pending;
   }
-  async load(scenario: Scenario): Promise<TableEpisode | null> {
+  async load(scenario: Scenario, signal?: AbortSignal): Promise<TableEpisode | null> {
     const entry = this.manifest.episodes.find(e => e.id === scenario.id);
     if (!entry || !same(entry.scenario, scenario)) return null; // A live plan may reuse numeric IDs.
-    const data = await verifiedJSON(this.base, entry);
+    const data = await verifiedJSON(this.base, entry, signal);
     check(data.schema_version === 1 && same(data.scenario, entry.scenario), 'Published trajectory scenario differs from its manifest');
     check(Array.isArray(data.geoms) && data.geoms.length > 0 && data.geoms.length <= 256 && Array.isArray(data.frames) && data.frames.length === entry.frames, 'Invalid recorded geometry/frame count');
     const geoms: TableGeom[] = [];
     // Sequential mesh loads bound network/decode concurrency and reuse geometry.
     for (const geom of data.geoms) {
       check(['mesh', 'box', 'sphere', 'cylinder'].includes(geom.type) && Number.isInteger(geom.id) && Array.isArray(geom.size) && geom.size.every((n: unknown) => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n < 10) && typeof geom.color === 'string', 'Invalid recorded geometry');
-      if (geom.type === 'mesh') { check(typeof geom.mesh === 'string', 'Invalid shared mesh reference'); geoms.push({ ...geom, mesh: await this.mesh(geom.mesh) }); }
+      // Detach cancelled selections without cancelling a mesh shared by others.
+      if (geom.type === 'mesh') { check(typeof geom.mesh === 'string', 'Invalid shared mesh reference'); geoms.push({ ...geom, mesh: await withAbort(this.mesh(geom.mesh), signal) }); }
       else geoms.push(geom);
     }
     const vector = (value: any, size: number) => Array.isArray(value) && value.length === size && value.every((n: unknown) => typeof n === 'number' && Number.isFinite(n) && Math.abs(n) < 10);

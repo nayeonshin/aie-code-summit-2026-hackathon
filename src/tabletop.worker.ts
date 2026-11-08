@@ -6,17 +6,22 @@ import { TabletopRecordings } from './tabletop-recordings';
 let engine: WasmEngine | undefined;
 let initialized = false;
 let recordings: TabletopRecordings | null = null;
-async function episodeFor(id: number) {
-  const published = await recordings?.load(collection[id]);
+async function episodeFor(id: number, signal: AbortSignal) {
+  const scenario = collection[id];
+  const published = await recordings?.load(scenario, signal);
+  signal.throwIfAborted();
   if (published) return published;
   engine ??= await WasmEngine.create();
-  return simulateTabletop(engine.mj, collection[id]);
+  signal.throwIfAborted();
+  return simulateTabletop(engine.mj, scenario);
 }
 let pending: number | null = null;
 let gridQueue: number[] = [];
 let working = false;
 let collection = scenarios;
 let revision = 0;
+let active: AbortController | undefined;
+function supersede() { revision++; active?.abort(); pending = null; gridQueue = []; }
 const cache = new Map<number, Awaited<ReturnType<typeof simulateTabletop>>>();
 async function drain() {
   if (working || !initialized) return;
@@ -26,9 +31,10 @@ async function drain() {
       const grid = pending === null;
       const id: number = grid ? gridQueue.shift()! : pending!; if (!grid) pending = null;
       const generation = revision;
+      const controller = new AbortController(); active = controller;
       try {
         let episode = cache.get(id);
-        if (!episode) { episode = await episodeFor(id); if (generation !== revision) continue; if (!grid) cache.set(id, episode); }
+        if (!episode) { episode = await episodeFor(id, controller.signal); if (generation !== revision) continue; if (!grid) cache.set(id, episode); }
         // Keep memory bounded: only six full episodes are resident in the worker.
         if (cache.size > 6) cache.delete(cache.keys().next().value!);
         if (grid) {
@@ -41,16 +47,16 @@ async function drain() {
       } catch (error) {
         if (generation === revision) self.postMessage({ type: 'error', id, grid, error: (error as Error).message });
         // A failed/stale download must not discard a newer queued selection.
-      }
+      } finally { if (active === controller) active = undefined; }
     }
   } catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); }
   finally { working = false; }
 }
 self.onmessage = async event => {
   const { type, id, plan, ids } = event.data;
-  if (type === 'grid' && Array.isArray(ids)) { revision++; gridQueue = ids.filter(id => Number.isInteger(id) && id >= 0 && id < collection.length).slice(0, 25); void drain(); }
-  if (type === 'collection') { try { collection = createCollection(plan); revision++; cache.clear(); } catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); } }
-  if (type === 'select' && Number.isInteger(id) && id >= 0 && id < collection.length) { pending = id; void drain(); }
+  if (type === 'grid' && Array.isArray(ids)) { supersede(); gridQueue = ids.filter(id => Number.isInteger(id) && id >= 0 && id < collection.length).slice(0, 25); void drain(); }
+  if (type === 'collection') { try { collection = createCollection(plan); supersede(); cache.clear(); } catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); } }
+  if (type === 'select' && Number.isInteger(id) && id >= 0 && id < collection.length) { supersede(); pending = id; void drain(); }
   if (type === 'init') {
     try { recordings = await TabletopRecordings.open(); initialized = true; self.postMessage({ type: 'ready' }); void drain(); }
     catch (error) { self.postMessage({ type: 'error', error: (error as Error).message }); }
