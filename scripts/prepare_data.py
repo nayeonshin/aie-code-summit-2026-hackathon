@@ -13,7 +13,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'data/publish'
 PRODUCTION = '7c850e6a-ff7f-4a42-9c12-375c2e28549b'
-BASE = f'https://hand-studio.hidden-pond-5e6a.workers.dev/datasets/{PRODUCTION}/'
+BASE = f'https://labbit.science/datasets/{PRODUCTION}/'
 HF = 'https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation'
 
 

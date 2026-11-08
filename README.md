@@ -7,13 +7,13 @@
 <p align="center"><em>A simulation-first lab for robot decisions.</em></p>
 
 <p align="center">
-  <a href="https://hand-studio.hidden-pond-5e6a.workers.dev">Try the live lab</a> ·
+  <a href="https://labbit.science">Try the live lab</a> ·
   <a href="https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation">Explore the generated dataset</a>
 </p>
 
 **Labbit** is a play on *lab* and *rabbit*: a minimal live robotic-hand workbench and a reproducible simulation dataset factory. The goal is **100,000 useful, diverse 20-second episodes**.
 
-**Live deployment:** https://hand-studio.hidden-pond-5e6a.workers.dev
+**Live deployment:** https://labbit.science
 
 **Hugging Face dataset:** https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation
 
@@ -144,7 +144,7 @@ npm run build:cloud
 3. To generate/save a new dataset or call Meta/SubQ, use the key icon and enter `ADMIN_TOKEN` from your local, gitignored `.deploy.env`.
 4. Choose 100 episodes, optionally request a Meta variation plan, then generate. **Keep the tab open**: deployed physics runs in browser WASM, not in an unattended cloud compute service.
 
-The Cloudflare Worker URL and R2 bucket retain their original `hand-studio` infrastructure names to preserve existing secrets, object keys and live links. The product is now Labbit; rebranding does not migrate or delete datasets.
+Labbit's canonical public address is **https://labbit.science**. The Cloudflare Worker and R2 bucket retain their original `hand-studio` infrastructure names to preserve existing secrets and object keys. The original `workers.dev` address remains a compatibility endpoint; rebranding does not migrate or delete datasets. See the [deployment and branding guide](docs/deployment.md).
 
 ## Data generated so far
 
@@ -152,7 +152,7 @@ The Cloudflare Worker URL and R2 bucket retain their original `hand-studio` infr
 
 | Run | Location | Episodes | Duration | Frames | Shards | Compressed size |
 |---|---|---:|---:|---:|---:|---:|
-| [Production pilot](https://hand-studio.hidden-pond-5e6a.workers.dev/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/manifest.json) | Cloudflare R2 | 100 | 20s | 60,000 | 10 JSON/gzip | 23.55 MB |
+| [Production pilot](https://labbit.science/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/manifest.json) | Cloudflare R2 | 100 | 20s | 60,000 | 10 JSON/gzip | 23.55 MB |
 | `objectives100-20s` | Local native MuJoCo | 100 | 20s | 60,000 | 4 Parquet/zstd | 15.37 MB |
 | `objectives100` | Local legacy pilot | 100 | 5s | 15,000 | 4 Parquet/zstd | 4.50 MB |
 | `pilot90` | Local legacy pilot | 90 | 5s | 13,500 | 1 Parquet/zstd | 4.18 MB |
@@ -162,7 +162,7 @@ The Cloudflare Worker URL and R2 bucket retain their original `hand-studio` infr
 Production run ID: `7c850e6a-ff7f-4a42-9c12-375c2e28549b`. Its manifest contains each shard's filename, episode range, size and SHA-256 checksum. Download a shard by joining its filename to:
 
 ```text
-https://hand-studio.hidden-pond-5e6a.workers.dev/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/
+https://labbit.science/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/
 ```
 
 Local runs are in `data/runs/` on the development machine, **not committed to Git and not automatically uploaded to R2**. Browser/native engines and controller revisions differ; inspect each manifest's provenance before pooling datasets. The archived production pilot predates the current browser anchor-jitter controller revision and remains available for replay.
@@ -174,7 +174,7 @@ import gzip
 import json
 from urllib.request import urlopen
 
-base = "https://hand-studio.hidden-pond-5e6a.workers.dev/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/"
+base = "https://labbit.science/datasets/7c850e6a-ff7f-4a42-9c12-375c2e28549b/"
 with urlopen(base + "manifest.json") as response:
     manifest = json.load(response)
 with urlopen(base + manifest["shards"][0]["file"]) as response:
@@ -358,6 +358,8 @@ For CLI resume after cancellation, remove only that run's `cancel` marker; the U
 ## Deploy with Wrangler and R2
 
 [`wrangler.jsonc`](wrangler.jsonc) contains the current deployment name, account, R2 binding, coordinator migration and static asset routing. For another account, change those deliberately; do not overwrite someone else's Worker or bucket.
+
+Wrangler attaches **labbit.science** as a Cloudflare custom domain with managed DNS and TLS. The domain's zone must be active in the configured Cloudflare account. Keep the existing Worker, bucket and Durable Object bindings; see [deployment verification](docs/deployment.md#verify-the-deployment). Activate the Python environment before deploying.
 
 ```sh
 npx wrangler login

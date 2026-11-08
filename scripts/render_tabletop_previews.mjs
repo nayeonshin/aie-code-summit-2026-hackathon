@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
 import { verifyPreviewIdentity } from './tabletop_preview_identity.mjs';
-const url = process.argv.find(arg => arg.startsWith('--url='))?.slice(6) ?? 'https://hand-studio.hidden-pond-5e6a.workers.dev';
+const url = process.argv.find(arg => arg.startsWith('--url='))?.slice(6) ?? 'https://labbit.science';
 const inventory = JSON.parse(readFileSync('config/tabletop-recordings.json'));
 const approved = join(tmpdir(), 'opencode'); mkdirSync(approved, { recursive: true });
 const directory = mkdtempSync(join(approved, 'labbit-previews-'));
