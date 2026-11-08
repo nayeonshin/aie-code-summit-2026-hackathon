@@ -44,7 +44,14 @@
   ],
   "tabletop": {
     "planned": 1000,
-    "recorded": 100
+    "recorded": 100,
+    "compact": {
+      "schema_version": 1,
+      "recorded": 100,
+      "bytes": 132686149,
+      "standalone_bytes": 1077069342,
+      "meshes": 10
+    }
   },
   "muse": {
     "model": "muse-wonder-1.0",

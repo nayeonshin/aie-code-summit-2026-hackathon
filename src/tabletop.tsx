@@ -7,6 +7,7 @@ import { TabletopRenderer } from './tabletop-renderer';
 import type { TableEpisode } from './tabletop-physics';
 import './tabletop.css';
 import { TabletopGrid } from './tabletop-grid';
+import { Dropdown } from './dropdown';
 
 export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
   const canvas = useRef<HTMLCanvasElement>(null), renderer = useRef<TabletopRenderer | null>(null), worker = useRef<Worker | null>(null);
@@ -35,7 +36,7 @@ export function Tabletop({ onFoundations }: { onFoundations: () => void }) {
     w.onmessage = event => {
       const data = event.data;
       if (data.type === 'ready') setReady(true);
-      if (data.type === 'error') { setError(data.error); setBusy(false); }
+      if (data.type === 'error' && (!Number.isInteger(data.id) || data.id === selectedRef.current)) { setError(data.error); setBusy(false); }
       if (data.type === 'episode') {
         setVisited(prev => new Set([...prev, data.id]));
         if (data.id !== selectedRef.current) return;

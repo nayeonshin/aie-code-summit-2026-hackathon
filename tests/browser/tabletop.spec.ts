@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async ({ page }) => { await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ status: 404 })); });
 
 test('tabletop collection, navigation, real playback, and export', async ({ page }) => {
   test.setTimeout(120000);

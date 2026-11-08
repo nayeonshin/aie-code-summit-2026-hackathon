@@ -1,5 +1,5 @@
 import type { MainModule, MjModel, MjData } from '@mujoco/mujoco';
-import { fetchAsset } from './asset-fetch';
+import { fetchAsset, withAbort } from './asset-fetch';
 import { duration, sampleHz, type Scenario } from './tabletop-scenarios';
 import { calibrateGrasp, rotateY, graspController } from './grasp';
 import { simulateSo101Pour } from './so101-pour';

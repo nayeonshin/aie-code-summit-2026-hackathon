@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async ({ page }) => { await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ status: 404 })); });
 
 test('minimal grid renders distinct physics episodes, pages, pauses and focuses', async ({ page }) => {
   test.setTimeout(180000);
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/');
   await page.getByRole('button', { name: 'Grid', exact: true }).click();
-  await page.getByLabel('Simultaneous simulations').selectOption('4');
+  await page.getByRole('combobox', { name: 'Simultaneous simulations' }).click();
+  await page.getByRole('option', { name: '4 views', exact: true }).click();
   await expect(page.locator('.tt-grid-tile')).toHaveCount(4);
   await expect(page.locator('.tt-grid-loading')).toHaveCount(0, { timeout: 120000 });
   await expect(page.getByLabel('Tabletop simulation grid')).toBeVisible();
@@ -26,7 +28,8 @@ test('25-view grid loads within bounded renderer count and fits mobile', async (
   test.setTimeout(240000);
   await page.goto('/');
   await page.getByRole('button', { name: 'Grid', exact: true }).click();
-  await page.getByLabel('Simultaneous simulations').selectOption('25');
+  await page.getByRole('combobox', { name: 'Simultaneous simulations' }).click();
+  await page.getByRole('option', { name: '25 views', exact: true }).click();
   await expect(page.locator('.tt-grid-tile')).toHaveCount(25);
   await expect(page.locator('.tt-grid-loading')).toHaveCount(0, { timeout: 180000 });
   await expect(page.locator('[role=alert]')).toHaveCount(0);
