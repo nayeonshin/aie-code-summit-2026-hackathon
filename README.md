@@ -11,42 +11,70 @@
   <a href="https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation">Explore the generated dataset</a>
 </p>
 
-**Labbit** lets robots make mistakes where nothing breaks. Before a robot touches fragile equipment or valuable samples, it should be able to test its options in simulation, compare the evidence and build confidence in its next move. **Think. Test. Compare. Then act.**
-
-Today, Labbit is an inspectable simulation workbench and dataset factory. **Meta Muse Wonder** proposes bounded scenario variations, **MuJoCo** computes physical trajectories and measured outcomes, and **SubQ** provides separately attributed advisory visual reviews. Comparing decisions before real-world execution is our vision—not a claim of validated autonomous robot safety.
+**Labbit** is a play on *lab* and *rabbit*: a minimal live robotic-hand workbench and a reproducible simulation dataset factory. The goal is **100,000 useful, diverse 20-second episodes**.
 
 **Live deployment:** https://hand-studio.hidden-pond-5e6a.workers.dev
 
 **Hugging Face dataset:** https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation
 
-### What data do we generate?
+### See the recorded data
 
-- **Tabletop manipulation:** pick-and-place, contact pushing, stacking and cup-to-cup particle pouring. Each 12-second episode stores **361 frames at 30 Hz**, hand/object transforms, contact counts, grip telemetry, scenario parameters and measured outcomes such as target distance or retained particles.
-- **Reproducible variation:** shape, size, mass, friction, placement and motion vary within validated bounds. Saved plans and trajectory provenance keep AI proposals distinct from simulated evidence.
-- **Failures included:** a push that misses its target remains a useful recorded attempt. Numerical validity is not task success; an AI review is not a safety certificate. Grasps are assisted, and pouring uses 36 rigid particles rather than continuum water.
-- **Archived hand motion:** separate 5- and 20-second collections retain joint positions, velocities, actuator commands and forces. Tabletop exports are not a complete low-level control-policy dataset and should not be pooled with these older recordings without checking provenance.
+| Pick & place · episode 1 | Contact push · episode 2 |
+| --- | --- |
+| ![Recorded assisted pick-and-place trajectory](docs/media/transfer.gif) | ![Recorded contact push that misses its target](docs/media/push.gif) |
+| Stack · episode 4 | Particle pour · episode 3 |
+| ![Recorded assisted stacking trajectory](docs/media/stack.gif) | ![Recorded cup-to-cup rigid-particle pour](docs/media/pour.gif) |
 
-### Published data and generation capacity
+These GIFs render actual published frames, sampled at 10 Hz for documentation; the dataset retains all 361 frames at 30 Hz. Pick/place, stacking and cup handling use assisted grasps. Pouring uses 36 rigid particles, not continuum water. The shown pushing episode finishes **24.7 cm from its target**—a retained failure, not a success claim. Exact episode hashes, dataset revision and frame indices are in [`docs/media/previews.json`](docs/media/previews.json).
 
-The [Hugging Face catalog](https://huggingface.co/datasets/MedSalim/labbit-robotic-manipulation/blob/main/catalog.json), checked on **7 November 2026**, lists **100 published tabletop episodes + 390 archived hand-only episodes**. The tabletop plan contains **1,000 scenarios**; planned scenarios are not completed recordings.
+### Objective and usefulness
 
-**Local 1,000-episode campaign — snapshot at 17:03 PST on 7 November 2026:** **372 / 1,000 completed (37.2%)**, approximately **4.01 GB** saved, with **no validation errors logged**. Generation was continuing at that snapshot, with roughly **37 minutes remaining** based on measured episode times. This is a dated local progress report, not a live counter or an additional published dataset; it overlaps the existing pilot and must not be added to the published count.
+Labbit makes simulated manipulation **inspectable and reproducible**: connect physical parameter proposals to recorded motion, measured outcomes and separately attributed visual reviews. Change shape, mass, friction, placement or motion parameters without confusing a proposal with a successful demonstration.
 
-At the observed average of **~3.6 seconds per tabletop episode**, 1,000 episodes take roughly **one hour** and **10.8 GB** in standalone JSON. A linear projection to 100,000 is roughly **100 hours and 1.1 TB**, not a completed run or a sustained-throughput guarantee. The published 100-episode compact pilot uses **132.7 MB**, about **88% less** than its 1,077.1 MB standalone equivalent, by sharing mesh geometry while retaining every recorded frame. Task mix, hardware, export overhead and uploads affect capacity; images and paid AI reviews are excluded. The faster native hand-only benchmark below is a different workload.
+- **Motion and perception research:** render known 3D trajectories into images and study temporal representation, object-motion prediction or scene tracking.
+- **Simulation/debugging:** replay exact hand/object transforms, inspect grasp alignment, and compare numerical outcomes across scenario families.
+- **Dataset tooling:** exercise provenance, integrity checks, compact storage, parallel processing and failure-aware review pipelines before scaling.
 
-**Saving locally is not backing up remotely.** This campaign does not automatically upload completed episodes to Hugging Face or Cloudflare R2. Files survive a stopped generator but not disk loss; the final index is written on completion. Publication is a separate explicit step. Wrangler deploys the viewer; R2 stores cloud trajectories. This README update does not publish data or deploy the app.
+This is **not** a validated sim-to-real benchmark or a complete low-level policy-training dataset. Tabletop exports contain transforms/contact counts/grip telemetry, not per-frame actuator commands or full joint-state/force telemetry. Assisted grasps and disabled hand collisions limit contact-policy conclusions. See the [dataset card](docs/dataset-card.md) for scope, units, formats and responsible use.
 
-### First-release review gate
+### Release status
 
-PR #2 is stacked on PR #1. Resolve/re-review the recovery and startup findings, merge #2 into the first app branch, then merge #1 into `main`. **Do not start a credit-exhausting generation job during review.** AI calls are explicit authenticated actions, never triggered by browsing the app. The coordinator's reservation is a conservative local cap, not the actual Meta/SubQ billing balance.
+PRs #1 and #2 were merged on November 7, 2026. This follow-up adds compact published replay and visual dataset documentation. Paid Muse/SubQ requests still require an explicit review count and spending cap; browsing or rendering does not trigger them. The coordinator's reservation is a conservative local cap, not actual provider billing.
 
 ### Minimal simulation views
 
 **Single** keeps orbit, playback, scrubbing and export controls. **Grid** replaces the old Hand studies tab with 4, 9, 16 or 25 tabletop simulations at once, task filtering and paging through the collection. Click a tile's number to focus it. The grid uses one shared WebGL canvas, one sequential physics worker and packed 10 Hz transforms (full single-episode exports remain 30 Hz). The 25-view cap bounds memory/GPU usage; it does not load all 1,000 scenarios at once. Legacy hand replay remains available in **Data & AI → Legacy recordings** or `/#hands`.
 
-Main-screen introductions, readiness labels, study descriptions, provenance and inspector paragraphs are removed. Model limitations, measured outcomes, selected-plan attribution and the published Hugging Face inventory remain in the data panel. The tabletop paid-generation button is unavailable during release review.
+Task, view-count and speed controls use consistent styled dropdowns with arrow-key navigation, Home/End, Enter, Escape and visible focus states.
 
-### Provenance and inventory
+Main-screen introductions, readiness labels, study descriptions, provenance and inspector paragraphs are removed. Model limitations, measured outcomes, selected-plan attribution and the published Hugging Face inventory remain in the data panel. The tabletop paid-generation button stays unavailable until a campaign is authorized.
+
+### Compact published replay
+
+The default tabletop workspace first looks for an exact matching published recording, then computes unrecorded scenarios on demand. Published data is pinned to a Hugging Face commit and validated against scenario identity, SHA-256, geometry and telemetry. Failed/corrupt published downloads show an error with Retry; they are not silently replaced by newly computed data. Data & AI identifies the playback source and immutable dataset revision. This works in Single and Grid without initializing MuJoCo for recorded episodes.
+
+The app serves those pinned public files through a read-only same-origin endpoint to avoid Hugging Face resolver CORS failures. Only allowlisted files/revisions can be requested; bytes are checked before immutable caching. Vite forwards this specific read route to the deployed endpoint while keeping native APIs local.
+
+Standalone exports remain compatible. Compact episode copies preserve every recorded number and all 361 frames at 30 Hz; mesh geometry is stored once by content hash. Copies do not inflate recorded counts. Four conversion workers own distinct episode outputs, share only immutable mesh objects, and a single parent validates/consolidates the manifest.
+
+The existing 100-episode pilot uses **132.7 MB** in compact form versus **1,077.1 MB** standalone (about **88% smaller**), with 10 shared meshes. Original files are retained on Hugging Face, so this additive compatibility release does not shrink the total repository storage footprint.
+
+```sh
+# Local conversion of the existing pilot; no physics regeneration or AI calls.
+python -m scripts.compact_tabletop --workers=4
+
+# Add compact files without deleting or re-uploading standalone trajectories.
+hf upload MedSalim/labbit-robotic-manipulation data/publish . --repo-type dataset \
+  --include "tabletop/compact/*" "tabletop/meshes/*" "README.md" "catalog.json"
+
+# After upload, pin the frontend to the uploaded dataset commit (40-character SHA).
+python -m scripts.compact_tabletop --pin <HF_COMMIT_SHA>
+npm run test:recordings
+```
+
+`--source` and `--output` select separate conversion directories. The pin step checks the uploaded manifest matches the validated local inventory before updating `config/tabletop-recordings.json`; cloud preparation copies that small snapshot, not the raw dataset, into frontend assets. Paid Muse/SubQ work still requires a separate review count and spending cap.
+
+### Dataset attribution
 
 Open **Data & AI** in either workspace to distinguish **MuJoCo trajectories**, **Muse parameter proposals/rationale**, and **SubQ visual reviews**. The panel includes a Hugging Face button, collection files, model/plan attribution and raw saved review outputs. Unreviewed tabletop episodes are labeled **SubQ not reviewed**; existing hand-only reviews are not fabricated into tabletop labels.
 
@@ -59,7 +87,7 @@ The previous 100 seeded baseline scenarios remain the fallback when no Muse plan
 ### Reproduce exports and publish with the CLI
 
 ```sh
-# Explicit paid call; wait until the first app release is reviewed/merged.
+# Explicit paid call; only run after agreeing on a campaign and spending cap.
 node scripts/generate_muse.mjs
 
 # Local physics only: validate and export 100 scenarios from the saved plan.
@@ -77,14 +105,14 @@ Task-filtered exports (`--tasks=pour`) must match the existing scenario fingerpr
 
 ### Tabletop workspace (new default)
 
-The baseline contains **100 deterministic tabletop studies**: 25 pick/place, 25 surface pushes, 25 stack/balance tasks, and 25 cup-to-cup particle pours. The default now loads the published **1,000-scenario Muse plan**, with the baseline as a fallback. Each selected study computes a 12-second MuJoCo trajectory (361 frames including the initial state), then plays it locally. The scenario count is **not a count of pre-uploaded R2 manipulation recordings**. Six recent episodes are cached to bound browser memory.
+The baseline contains **100 deterministic tabletop studies**: 25 pick/place, 25 surface pushes, 25 stack/balance tasks, and 25 cup-to-cup particle pours. The default loads the published **1,000-scenario Muse plan**, with the baseline as a fallback. Matching published recordings replay directly; other studies compute a 12-second MuJoCo trajectory (361 frames including the initial state). The scenario count is **not a count of stored recordings**. Six recent full episodes are cached to bound browser memory.
 
-- Browse or search the sidebar; filter by task. On mobile, use **Browse studies**.
+- Browse or search the sidebar; filter by task. On mobile, use **Browse**.
 - Use **← / →** for previous/next, **Space** to pause, the timeline to scrub, and the speed selector for slow motion. Drag to orbit and scroll/pinch to zoom.
 - Export a selected episode as JSON with transforms, contact counts, task parameters, measured target error / retained particles, and explicit provenance.
-- The tabletop hand is a **custom five-finger, 20-actuator extension** of the licensed LEAP geometry, with a duplicated articulated little finger. It is not a calibrated five-finger hardware model. The original four-finger / 16-DOF dataset remains unchanged under **Hand studies** (`/#hands`).
+- The tabletop hand is a **custom five-finger, 20-actuator extension** of the licensed LEAP geometry, with a duplicated articulated little finger. It is not a calibrated five-finger hardware model. The original four-finger / 16-DOF dataset remains unchanged under **Legacy recordings** (`/#hands`).
 - Pick/place, stacking, and cup handling use a scripted mocap wrist and temporary weld-assisted grasp. Objects have mass, gravity, friction and physical contacts, and become unconstrained on release. Surface pushing uses a collision-driven pusher. These are **assisted manipulation demonstrations, not autonomous learned grasp policies**; visual hand collisions are disabled in this version.
-- “Water” is **36 discrete rigid particles** interacting with compound cup walls, not a continuum fluid solver. The UI reports particles retained in the receiving cup; it does not claim calibrated fluid volume or real-world pouring success.
+- “Water” is **36 discrete rigid particles** interacting with compound cup walls, not a continuum fluid solver. The data panel reports particles retained in the receiving cup; it does not claim calibrated fluid volume or real-world pouring success.
 - The rabbit icon is an SVG recreation of the supplied brand reference. Text uses a larger system font without external font downloads.
 
 Run `npm run test:tabletop` to validate the 100 baseline scenarios; `npm run test:cloud` checks cancellation, immutable-shard validation, crash recovery, stale-status consistency and remote cancellation without cloud writes or AI calls. `npm run test:first-launch` checks a real Chrome startup without a previous cloud build, and `node scripts/check_tabletop_retry.mjs` checks successful recovery after an exhausted asset download.

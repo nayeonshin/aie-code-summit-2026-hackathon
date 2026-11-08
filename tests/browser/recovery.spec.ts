@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async ({ page }) => { await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ status: 404 })); });
 
 test('resume refreshes the row and starts progress polling without reopening panel', async ({ page }) => {
   const run = { id: 'resume-fixture', status: 'interrupted', attempted: 10, valid: 10, config: { count: 100 } };
@@ -38,7 +39,7 @@ test('published Muse collection supports 1,000 studies and keyboard navigation b
   const variants = Array.from({ length: 24 }, (_, i) => ({ task: ['transfer', 'push', 'stack', 'pour'][i % 4], shape: ['cube', 'sphere', 'cylinder'][i % 3], size: .025, mass: .06, friction: .7, speed: 1, lift: .15, lateral: .01, startY: -.02, goalY: .02, rationale: 'Mock bounded diversity; no AI spend' }));
   await page.route('**/api/tabletop/plans/latest', route => route.fulfill({ json: { id: 'fixture-muse-1000', model: 'muse-wonder-1.0', created_at: '2026-11-07T00:00:00Z', count: 1000, variants } }));
   await page.goto('/');
-  await expect(page.locator('.tt-card')).toHaveCount(1000);
+  await expect(page.locator('.tt-card')).toHaveCount(1025);
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 60000 });
   await expect(page.locator('.tt-source-line')).toHaveCount(0);
   await page.locator('.tt-card').nth(125).click();

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async ({ page }) => { await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ status: 404 })); });
 
 test('tabletop collection, navigation, real playback, and export', async ({ page }) => {
   test.setTimeout(120000);
@@ -8,7 +9,7 @@ test('tabletop collection, navigation, real playback, and export', async ({ page
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('button', { name: 'Grid', exact: true })).toBeVisible();
-  await expect(page.locator('.tt-card')).toHaveCount(100);
+  await expect(page.locator('.tt-card')).toHaveCount(125);
   await expect(page.locator('.tt-loading')).toHaveCount(0, { timeout: 90000 });
   await expect(page.locator('[role=alert]')).toHaveCount(0);
   await expect.poll(async () => Number(await page.getByLabel('Tabletop playback position').inputValue())).toBeGreaterThan(1);

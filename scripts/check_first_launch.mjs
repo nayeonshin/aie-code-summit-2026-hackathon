@@ -24,7 +24,10 @@ try {
   });
   assert.equal(existsSync(join(checkout, 'public/model/manifest.json')), true);
   browser = await chromium.launch({ channel: 'chrome' });
-  const page = await browser.newPage(); await page.goto('http://127.0.0.1:5197');
+  const page = await browser.newPage();
+  // Exercise real local physics preparation, independent of external HF access.
+  await page.route('**/data/tabletop-recordings.json', route => route.fulfill({ status: 404 }));
+  await page.goto('http://127.0.0.1:5197');
   await page.locator('input[aria-label="Tabletop playback position"]').waitFor({ state: 'visible', timeout: 30000 });
   await page.waitForFunction(() => !document.querySelector('.tt-loading'), null, { timeout: 60000 });
   assert.equal(await page.locator('[role=alert]').count(), 0);
